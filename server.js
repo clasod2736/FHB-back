@@ -19,10 +19,18 @@ app.get('/', (res, req) => {
     req.sendFile(path.join(__dirname, '../front-end/homebrewing/build/index.html'));
   })
 
-//get test api
-app.get ('/login', (req, res) => {
-    const working = 'working!!'
-    res.send(working)
+// login user
+app.get ('/login', async (req, res) => {
+    console.log(req.query)
+
+    try {
+        const userEmail = await FHB.findOne(req.query)
+        res.send(userEmail)
+        console.log(userEmail)
+    } catch {
+        console.log(error)
+        res.send(error)
+    }
 })
 
 //post test api
