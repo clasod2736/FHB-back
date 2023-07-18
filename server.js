@@ -27,7 +27,8 @@ app.get ('/login', async (req, res) => {
         const userEmail = await FHB.findOne(req.query)
         res.send(userEmail)
         console.log(userEmail)
-    } catch {
+    } 
+    catch (error) {
         console.log(error)
         res.send(error)
     }
