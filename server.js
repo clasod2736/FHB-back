@@ -34,20 +34,22 @@ app.get ('/login', async (req, res) => {
     }
 })
 
-//post test api
+//post user data (register user)
 app.post('/register', async function (req, res) {
 
     console.log("req: ", req.body)
     const userName = req.body.name;
     const userEmail = req.body.email;
-    const userBrews = req.body.brews;
+    const userCurrentBrews = req.body.currentBrews;
+    const userOldBrews  = req.body.oldBrews;
 
     try {
 
      const newUser = await new FHB({
             name : userName,
             email : userEmail,
-            brews : userBrews
+            currentBrews : userCurrentBrews,
+            oldBrews: userOldBrews
         });
         await newUser.save();
 
@@ -55,8 +57,53 @@ app.post('/register', async function (req, res) {
         
     } catch (error) {
         console.log(error);
-         res.send("didn't work?")
+        res.sendStatus
     }   
+})
+
+//update menu name
+app.put('/menu', async function (req, res) {
+    const userName = req.body.name
+    const coffeeName = req.body.currentBrews.menuName
+    console.log(coffeeName)
+
+    try {
+        const updateMenuName = await FHB.findOneAndUpdate({
+            "name" : userName
+        }, {
+            $set:{
+            "currentBrews.menuName" : coffeeName
+        }
+        }, {
+            new: true
+        });
+
+        res.status(200).json(updateMenuName);
+    } catch (error) {
+        console.log(error)
+    }
+})
+//update mthod name
+app.put('/method', async function (req, res) {
+    const userName = req.body.name
+    const methodName = req.body.currentBrews.methodName
+    console.log(methodName)
+
+    try {
+        const updateMenuName = await FHB.findOneAndUpdate({
+            "name" : userName
+        }, {
+            $set:{
+            "currentBrews.methodName" : methodName
+        }
+        }, {
+            new: true
+        });
+
+        res.status(200).json(updateMenuName);
+    } catch (error) {
+        console.log(error)
+    }
 })
 
 app.listen(port, () => {

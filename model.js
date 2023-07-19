@@ -9,8 +9,19 @@ const FHBSchema = new Schema({
     email: {
         type: String
     },
-    brews: {
-        type: Object
+    currentBrews: {
+        menuName: String,
+        methodName: String,
+        serve: Number,
+        roasting: String,
+        grind: String
+    },
+    oldBrews: {
+        menuName: String,
+        methodName: String,
+        serve: Number,
+        roasting: String,
+        grind: String
     }
 });
 
