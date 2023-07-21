@@ -13,6 +13,7 @@ const FHBSchema = new Schema({
         menuName: String,
         methodName: String,
         serve: Number,
+        coffee: Number,
         roasting: String,
         grind: String
     },
@@ -22,6 +23,7 @@ const FHBSchema = new Schema({
         menuName: String,
         methodName: String,
         serve: Number,
+        coffee: Number,
         roasting: String,
         grind: String
     }]

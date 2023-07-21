@@ -48,6 +48,20 @@ app.get ('/finish', async (req, res) => {
     }
 })
 
+//GET history of oldBrews from DB
+app.get ('/getOldBrews', async (req, res) => {
+    console.log(req.query)
+
+    try {
+        const userName = await FHB.findOne(req.query);
+
+        res.send(userName.oldBrews);
+        console.log(userName.oldBrews);
+    } catch (error) {
+        console.log(error)
+    }
+})
+
 // POST user data (register user)
 app.post('/register', async function (req, res) {
 
@@ -126,6 +140,7 @@ app.put('/method', async function (req, res) {
 app.put('/recipe', async function (req, res) {
     const userName = req.body.name
     const serve = req.body.currentBrews.serve
+    const coffee = req.body.currentBrews.coffee
     const roasting = req.body.currentBrews.roasting
     const grind  = req.body.currentBrews.grind
     console.log(serve, roasting, grind);
@@ -136,6 +151,7 @@ app.put('/recipe', async function (req, res) {
         }, {
             $set:{
             "currentBrews.serve" : serve,
+            "currentBrews.coffee" : coffee,
             "currentBrews.roasting" : roasting,
             "currentBrews.grind" : grind,
         }
@@ -155,6 +171,7 @@ app.put('/deleteCurrentBrew', async function (req, res) {
     const menuName = req.body.currentBrews.menuName
     const methodName = req.body.currentBrews.methodName
     const serve = req.body.currentBrews.serve
+    const coffee = req.body.currentBrews.coffee
     const roasting = req.body.currentBrews.roasting
     const grind  = req.body.currentBrews.grind
 
@@ -166,6 +183,7 @@ app.put('/deleteCurrentBrew', async function (req, res) {
                 "currentBrews.menuName" : menuName,
                 "currentBrews.methodName" : methodName,
                 "currentBrews.serve" : serve,
+                "currentBrews.coffee" : coffee,
                 "currentBrews.roasting" : roasting,
                 "currentBrews.grind" : grind
         }
