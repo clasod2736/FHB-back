@@ -16,13 +16,15 @@ const FHBSchema = new Schema({
         roasting: String,
         grind: String
     },
-    oldBrews: {
+    oldBrews: [{
+        order: Number, 
+        date: String,
         menuName: String,
         methodName: String,
         serve: Number,
         roasting: String,
         grind: String
-    }
+    }]
 });
 
 const FHB = mongoose.model('fhb', FHBSchema, 'FHB');
