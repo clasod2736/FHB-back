@@ -90,7 +90,7 @@ app.post('/register', async function (req, res) {
     }   
 })
 
-// PUT-update menu name
+// PUT-update menu nameㄴ
 app.put('/menu', async function (req, res) {
     const userName = req.body.name
     const coffeeName = req.body.currentBrews.menuName
@@ -206,6 +206,12 @@ app.post('/saveRecipe', async function (req, res) {
         const user = await FHB.findOne({ name : userName });
 
         if (user) {
+
+            if (user.oldBrews.length >= 10) {
+                // If the array has 10 or more elements, remove the oldest one
+                user.oldBrews.shift();
+            }
+
             user.oldBrews.push(oldBrews);
             await user.save();
         }
