@@ -49,14 +49,26 @@ app.get ('/finish', async (req, res) => {
 })
 
 //GET history of oldBrews from DB
-app.get ('/getOldBrews', async (req, res) => {
-    console.log(req.query)
+app.get ('/getOldbrews', async (req, res) => {
 
     try {
         const userName = await FHB.findOne(req.query);
 
         res.send(userName.oldBrews);
-        console.log(userName.oldBrews);
+        console.log("Sent history");
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+//GET favourites from DB
+app.get ('/getFavourites', async (req, res) => {
+
+    try {
+        const userName = await FHB.findOne(req.query);
+
+        res.send(userName.favourites);
+        console.log("Sent Favourites");
     } catch (error) {
         console.log(error)
     }
@@ -70,6 +82,7 @@ app.post('/register', async function (req, res) {
     const userEmail = req.body.email;
     const userCurrentBrews = req.body.currentBrews;
     const userOldBrews  = req.body.oldBrews;
+    const userFavs  = req.body.favourites;
 
     try {
 
@@ -77,8 +90,8 @@ app.post('/register', async function (req, res) {
             name : userName,
             email : userEmail,
             currentBrews : userCurrentBrews,
-            oldBrews: userOldBrews
-
+            oldBrews: userOldBrews,
+            favourites: userFavs
         });
         await newUser.save();
 
@@ -90,7 +103,65 @@ app.post('/register', async function (req, res) {
     }   
 })
 
-// PUT-update menu nameㄴ
+//POST data oldBrews in database
+app.post('/saveHistory', async function (req, res) {
+    const userName = req.body.name;
+    const oldBrews =req.body.oldBrews[0];
+
+    try {
+        const user = await FHB.findOne({ name : userName });
+
+        if (user) {
+
+            if (user.oldBrews.length >= 10) {
+                // If the array has 10 or more elements, remove the oldest one
+                user.oldBrews.shift();
+            }
+
+            user.oldBrews.push(oldBrews);
+            await user.save();
+        }
+
+        res.send(user.oldBrews)
+        console.log("History!")
+
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+//POST favourite brews in database
+app.post('/saveFavourites', async function (req, res) {
+    const userName = req.body.name;
+    const favouriteBrews =req.body.favourites[0];
+
+    try {
+        const user = await FHB.findOne({ name : userName });
+
+        if (user) {
+
+            if (user.favourites.length >= 5) {
+                // If the array has 5 or more elements, remove the oldest one
+                res.status(422).send('failed')
+                return
+            } 
+            else if(user.favourites.length < 5) {
+
+                user.favourites.push(favouriteBrews);
+                await user.save();
+            }
+
+        }
+
+        res.send(user.favourites)
+        console.log("favourite!")
+
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+// PUT-update menu name
 app.put('/menu', async function (req, res) {
     const userName = req.body.name
     const coffeeName = req.body.currentBrews.menuName
@@ -104,7 +175,8 @@ app.put('/menu', async function (req, res) {
             "currentBrews.menuName" : coffeeName
         }
         }, {
-            new: true
+            new: true,
+            runValidators: true
         });
 
         res.status(200).json(updateMenuName);
@@ -127,7 +199,8 @@ app.put('/method', async function (req, res) {
             "currentBrews.methodName" : methodName
         }
         }, {
-            new: true
+            new: true,
+            runValidators: true
         });
 
         res.status(200).json(updateMethodName);
@@ -156,7 +229,8 @@ app.put('/recipe', async function (req, res) {
             "currentBrews.grind" : grind,
         }
         }, {
-            new: true
+            new: true,
+            runValidators: true
         });
 
         res.status(200).json(updateCureentRecipe);
@@ -188,37 +262,54 @@ app.put('/deleteCurrentBrew', async function (req, res) {
                 "currentBrews.grind" : grind
         }
         }, {
-            new: true
+            new: true,
+            runValidators: true
         })
-        console.log(resetCureentRecipe);
+        console.log("resetCureentRecipe!");
         res.status(200).json(resetCureentRecipe);
     } catch (error) {
         console.log(error)
     }
 })
 
-//POST data oldBrews in database
-app.post('/saveRecipe', async function (req, res) {
-    const userName = req.body.name;
-    const oldBrews =req.body.oldBrews[0];
+//PUT APIs for Custom FavDetails
+//PUT menuName in favourites
+app.put('/putMenuName', async function (req, res) {
+    const favName = req.body.favourites.favName
+    const menuName = req.body.favourites.menuName
 
     try {
-        const user = await FHB.findOne({ name : userName });
-
-        if (user) {
-
-            if (user.oldBrews.length >= 10) {
-                // If the array has 10 or more elements, remove the oldest one
-                user.oldBrews.shift();
-            }
-
-            user.oldBrews.push(oldBrews);
-            await user.save();
+        const updateMenuName = await FHB.findOneAndUpdate({
+            "favourites.favName" : favName
+        }, {
+            $set:{
+            "favourites.menuName" : menuName
         }
+        }, {
+            new: true,
+            runValidators: true
+        });
+        console.log(menuName, "customed.")
+        res.status(200).json(updateMenuName);
+    } catch (error) {
+        console.log(error)
+    }
+})
 
-        res.send(user.oldBrews)
-        console.log(user.oldBrews)
 
+
+//DELETE favourite brew in database
+app.delete('/deleteFav', async function(req, res)  {
+    const favName = req.query.favName;
+
+    try {
+
+            const deleteFav = await FHB.updateOne(
+                {}, 
+                { $pull: {"favourites" :{ favName: favName}}
+            });
+            console.log("Fav Deleted!")
+            res.send(deleteFav)
     } catch (error) {
         console.log(error)
     }
