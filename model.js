@@ -36,7 +36,8 @@ const FHBSchema = new Schema({
         serve: Number,
         coffee: Number,
         roasting: String,
-        grind: String
+        grind: String,
+        description: String
     }]
 });
 
