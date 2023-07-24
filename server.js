@@ -272,31 +272,29 @@ app.put('/deleteCurrentBrew', async function (req, res) {
     }
 })
 
-//PUT APIs for Custom FavDetails
-//PUT menuName in favourites
-app.put('/putMenuName', async function (req, res) {
+//PUT Description for favourite
+app.put('/updateDescription', async function (req, res) {
     const favName = req.body.favourites.favName
-    const menuName = req.body.favourites.menuName
+    const description = req.body.favourites.description
+    console.log(favName, description)
 
     try {
         const updateMenuName = await FHB.findOneAndUpdate({
             "favourites.favName" : favName
         }, {
             $set:{
-            "favourites.menuName" : menuName
+            "favourites.$.description" : description
         }
         }, {
             new: true,
             runValidators: true
         });
-        console.log(menuName, "customed.")
-        res.status(200).json(updateMenuName);
+        console.log(description, "saved.")
+        res.status(200).send(updateMenuName);
     } catch (error) {
         console.log(error)
     }
 })
-
-
 
 //DELETE favourite brew in database
 app.delete('/deleteFav', async function(req, res)  {
