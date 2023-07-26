@@ -5,7 +5,7 @@ const cors = require('cors');
 const bodyParser = require("body-parser")
 const connectDB = require('./database.js')
 const FHB = require(('./model.js'))
-const port = process.env.port || 8080;
+const port = process.env.PORT
 
 connectDB();
 
@@ -84,23 +84,32 @@ app.post('/register', async function (req, res) {
     const userOldBrews  = req.body.oldBrews;
     const userFavs  = req.body.favourites;
 
-    try {
+    const exisitingEmail = await FHB.findOne ({ email: userEmail })
 
-     const newUser = await new FHB({
-            name : userName,
-            email : userEmail,
-            currentBrews : userCurrentBrews,
-            oldBrews: userOldBrews,
-            favourites: userFavs
-        });
-        await newUser.save();
-
-         res.sendStatus(200);
+    if (exisitingEmail) {
+        res.sendStatus(400);
+    } else {
         
-    } catch (error) {
-        console.log(error);
-        res.sendStatus
-    }   
+        try {
+    
+         const newUser = await new FHB({
+                name : userName,
+                email : userEmail,
+                currentBrews : userCurrentBrews,
+                oldBrews: userOldBrews,
+                favourites: userFavs
+            });
+            await newUser.save();
+    
+             res.sendStatus(200);
+            
+        } catch (error) {
+            console.log(error);
+            res.sendStatus
+        }   
+
+    }
+
 })
 
 //POST data oldBrews in database
