@@ -1,0 +1,64 @@
+{
+    "method": [
+        {
+            "name": "mokapot",
+            "description": "The Moka Pot, an Italian classic, brews coffee by pressurizing hot water through coffee grounds. It offers a distinct flavor between Americano and espresso, capturing the essence of both methods.",
+            "hashTag": ["#Espresso", "#Crema", "#Portable", "#Italian", "#Bialetti", "#Durable", "#Easytomake"]
+        },
+        {
+            "name": "harioV6",
+            "description": "The Hario V60 is a manual drip coffee maker made from iconic heat-resistant glass. Its intricate design allows precise extraction. Experience delicate bean flavors and aromas with this choice.",
+            "hashTag": ["#PourOverPerfection",
+            "#DripDelights",
+            "#CraftedCoffee",
+            "#PrecisionBrewing",
+            "#BeanExpression",
+            "#AromaUnleashed",
+            "#BrewingMastery"]
+        },
+        {
+            "name": "frenchPress",
+            "description": "The French Press is a simple yet effective coffee maker that doesn't require grinding. Mixing coarsely ground coffee and water, pressing the plunger produces a rich, smooth brew with balanced flavors.",
+            "hashTag": ["#PressAndSip",
+            "#BrewingElegance",
+            "#CoffeeRituals",
+            "#SmoothBrew",
+            "#CaféVibes",
+            "#SimplePleasures",
+            "#BrewingTradition"]
+        },
+        {
+            "name": "aeropress",
+            "description": "The AeroPress is a portable marvel with versatile brewing techniques. Its piston plunging method creates a rich, clean taste profile, making it perfect for varied coffee lovers.",
+            "hashTag": ["#PressAndEnjoy",
+            "#OnTheGoBrew",
+            "#CompactBrewing",
+            "#VersatileCup",
+            "#PressPlay",
+            "#CoffeeInnovations",
+            "#BoldFlavors"]
+        },
+        {
+            "name": "chemax",
+            "description": "The Chemex, a glass coffee maker, uses filter method for a distinct sip. Prioritizing a clean, clear taste, it combines visual appeal with a unique coffee experience.",
+            "hashTag": [ "#ElegantBrew",
+            "#FilterCraft",
+            "#PouringArt",
+            "#CleanCup",
+            "#DistinctSip",
+            "#BrewingBeauty",
+            "#CoffeeAlchemy"]
+        },
+        {
+            "name": "syphon",
+            "description": "Syphon or Vacuum Coffee Maker extracts coffee scientifically. With water and coffee moving repeatedly, it delivers rich aroma and flavors, offering a unique coffee experience.",
+            "hashTag": [  "#ScienceInCup",
+            "#SiphonBrew",
+            "#VisualFlavors",
+            "#LabQuality",
+            "#ExtractionMagic",
+            "#BrewingChemistry",
+            "#UniqueBrew"]
+        }
+    ]
+}

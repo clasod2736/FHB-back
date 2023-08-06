@@ -3,26 +3,18 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const FHBSchema = new Schema({
-    name: {
-        type: String
-    },
     email: {
         type: String
     },
-    currentBrews: {
-        menuName: String,
-        methodName: String,
-        serve: Number,
-        coffee: Number,
-        roasting: String,
-        grind: String
+    password: {
+        type: String
     },
     oldBrews: [{
         order: Number, 
         date: String,
         menuName: String,
         methodName: String,
-        serve: Number,
+        water: Number,
         coffee: Number,
         roasting: String,
         grind: String
@@ -33,7 +25,7 @@ const FHBSchema = new Schema({
         date: String,
         menuName: String,
         methodName: String,
-        serve: Number,
+        water: Number,
         coffee: Number,
         roasting: String,
         grind: String,

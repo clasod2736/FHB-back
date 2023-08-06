@@ -5,7 +5,8 @@ const cors = require('cors');
 require('dotenv').config();
 const bodyParser = require("body-parser")
 const connectDB = require('./database.js')
-const FHB = require(('./model.js'))
+const FHB = require(('./model/userData.js'))
+
 const port = process.env.PORT
 
 connectDB();
@@ -13,6 +14,14 @@ connectDB();
 app.use(express.json());
 app.use(cors());
 app.use(bodyParser.json())
+
+app.get ('/', (req, res) => {
+    try {
+        console.log(req.session);
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 //basic router setting
 app.use(express.static(path.join(__dirname, '../front-end/homebrewing/build')));
@@ -23,11 +32,16 @@ app.get('/', (res, req) => {
 // GET user data for login
 app.get ('/login', async (req, res) => {
     console.log(req.query)
+    const userEmail = req.query.email
+    const userPassword = req.query.password
 
     try {
-        const userEmail = await FHB.findOne(req.query)
-        res.send(userEmail)
-        console.log(userEmail)
+        const userInfo = await FHB.findOne({
+            email: userEmail,
+            password: userPassword
+        })
+        res.send(userInfo)
+        console.log(userInfo.email, "LoggedIn!")
     } 
     catch (error) {
         console.log(error)
@@ -51,11 +65,12 @@ app.get ('/finish', async (req, res) => {
 
 //GET history of oldBrews from DB
 app.get ('/getOldbrews', async (req, res) => {
+    console.log(req.query)
 
     try {
-        const userName = await FHB.findOne(req.query);
+        const user = await FHB.findOne(req.query);
 
-        res.send(userName.oldBrews);
+        res.send(user.oldBrews);
         console.log("Sent history");
     } catch (error) {
         console.log(error)
@@ -66,9 +81,10 @@ app.get ('/getOldbrews', async (req, res) => {
 app.get ('/getFavourites', async (req, res) => {
 
     try {
-        const userName = await FHB.findOne(req.query);
+        const user = await FHB.findOne(req.query);
 
-        res.send(userName.favourites);
+        res.send(user.favourites);
+        console.log(user.favourites)
         console.log("Sent Favourites");
     } catch (error) {
         console.log(error)
@@ -78,14 +94,12 @@ app.get ('/getFavourites', async (req, res) => {
 // POST user data (register user)
 app.post('/register', async function (req, res) {
 
-    console.log("req: ", req.body)
-    const userName = req.body.name;
     const userEmail = req.body.email;
-    const userCurrentBrews = req.body.currentBrews;
+    const userPassword = req.body.password;
     const userOldBrews  = req.body.oldBrews;
     const userFavs  = req.body.favourites;
 
-    const exisitingEmail = await FHB.findOne ({ email: userEmail })
+    const exisitingEmail = await FHB.findOne({ email: userEmail })
 
     if (exisitingEmail) {
         res.sendStatus(400);
@@ -94,32 +108,30 @@ app.post('/register', async function (req, res) {
         try {
     
          const newUser = await new FHB({
-                name : userName,
                 email : userEmail,
-                currentBrews : userCurrentBrews,
+                password: userPassword,
                 oldBrews: userOldBrews,
                 favourites: userFavs
             });
             await newUser.save();
     
-             res.sendStatus(200);
-            
+            res.send(newUser._id);
+            console.log("Register Successed!")
+
         } catch (error) {
             console.log(error);
-            res.sendStatus
+            res.sendStatus(404)
         }   
-
     }
-
 })
 
 //POST data oldBrews in database
 app.post('/saveHistory', async function (req, res) {
-    const userName = req.body.name;
+    const userEmail = req.body.email;
     const oldBrews =req.body.oldBrews[0];
 
     try {
-        const user = await FHB.findOne({ name : userName });
+        const user = await FHB.findOne({ email : userEmail });
 
         if (user) {
 
@@ -142,11 +154,11 @@ app.post('/saveHistory', async function (req, res) {
 
 //POST favourite brews in database
 app.post('/saveFavourites', async function (req, res) {
-    const userName = req.body.name;
+    const userEmail = req.body.email;
     const favouriteBrews =req.body.favourites[0];
 
     try {
-        const user = await FHB.findOne({ name : userName });
+        const user = await FHB.findOne({ email : userEmail });
 
         if (user) {
 
@@ -172,115 +184,115 @@ app.post('/saveFavourites', async function (req, res) {
 })
 
 // PUT-update menu name
-app.put('/menu', async function (req, res) {
-    const userName = req.body.name
-    const coffeeName = req.body.currentBrews.menuName
-    console.log(coffeeName)
+// app.put('/menu', async function (req, res) {
+//     const userName = req.body
+//     const coffeeName = req.body.currentBrews.menuName
+//     console.log(coffeeName)
 
-    try {
-        const updateMenuName = await FHB.findOneAndUpdate({
-            "name" : userName
-        }, {
-            $set:{
-            "currentBrews.menuName" : coffeeName
-        }
-        }, {
-            new: true,
-            runValidators: true
-        });
+//     try {
+//         const updateMenuName = await FHB.findOneAndUpdate({
+//             "name" : userName
+//         }, {
+//             $set:{
+//             "currentBrews.menuName" : coffeeName
+//         }
+//         }, {
+//             new: true,
+//             runValidators: true
+//         });
 
-        res.status(200).json(updateMenuName);
-    } catch (error) {
-        console.log(error)
-    }
-})
+//         res.status(200).json(updateMenuName);
+//     } catch (error) {
+//         console.log(error)
+//     }
+// })
 
-//PUT-update method name
-app.put('/method', async function (req, res) {
-    const userName = req.body.name
-    const methodName = req.body.currentBrews.methodName
-    console.log(methodName)
+// //PUT-update method name
+// app.put('/method', async function (req, res) {
+//     const userName = req.body.name
+//     const methodName = req.body.currentBrews.methodName
+//     console.log(methodName)
 
-    try {
-        const updateMethodName = await FHB.findOneAndUpdate({
-            "name" : userName
-        }, {
-            $set:{
-            "currentBrews.methodName" : methodName
-        }
-        }, {
-            new: true,
-            runValidators: true
-        });
+//     try {
+//         const updateMethodName = await FHB.findOneAndUpdate({
+//             "name" : userName
+//         }, {
+//             $set:{
+//             "currentBrews.methodName" : methodName
+//         }
+//         }, {
+//             new: true,
+//             runValidators: true
+//         });
 
-        res.status(200).json(updateMethodName);
-    } catch (error) {
-        console.log(error)
-    }
-})
+//         res.status(200).json(updateMethodName);
+//     } catch (error) {
+//         console.log(error)
+//     }
+// })
 
-//PUT-update recipe for current brewing
-app.put('/recipe', async function (req, res) {
-    const userName = req.body.name
-    const serve = req.body.currentBrews.serve
-    const coffee = req.body.currentBrews.coffee
-    const roasting = req.body.currentBrews.roasting
-    const grind  = req.body.currentBrews.grind
-    console.log(serve, roasting, grind);
+// //PUT-update recipe for current brewing
+// app.put('/recipe', async function (req, res) {
+//     const userName = req.body.name
+//     const serve = req.body.currentBrews.serve
+//     const coffee = req.body.currentBrews.coffee
+//     const roasting = req.body.currentBrews.roasting
+//     const grind  = req.body.currentBrews.grind
+//     console.log(serve, roasting, grind);
 
-    try {
-        const updateCureentRecipe = await FHB.findOneAndUpdate({
-            "name" : userName
-        }, {
-            $set:{
-            "currentBrews.serve" : serve,
-            "currentBrews.coffee" : coffee,
-            "currentBrews.roasting" : roasting,
-            "currentBrews.grind" : grind,
-        }
-        }, {
-            new: true,
-            runValidators: true
-        });
+//     try {
+//         const updateCureentRecipe = await FHB.findOneAndUpdate({
+//             "name" : userName
+//         }, {
+//             $set:{
+//             "currentBrews.serve" : serve,
+//             "currentBrews.coffee" : coffee,
+//             "currentBrews.roasting" : roasting,
+//             "currentBrews.grind" : grind,
+//         }
+//         }, {
+//             new: true,
+//             runValidators: true
+//         });
 
-        res.status(200).json(updateCureentRecipe);
-    } catch (error) {
-        console.log(error)
-    }
-})
+//         res.status(200).json(updateCureentRecipe);
+//     } catch (error) {
+//         console.log(error)
+//     }
+// })
 
-//PUT reset current Brews
-app.put('/deleteCurrentBrew', async function (req, res) {
-    const userName = req.body.name
-    const menuName = req.body.currentBrews.menuName
-    const methodName = req.body.currentBrews.methodName
-    const serve = req.body.currentBrews.serve
-    const coffee = req.body.currentBrews.coffee
-    const roasting = req.body.currentBrews.roasting
-    const grind  = req.body.currentBrews.grind
+// //PUT reset current Brews
+// app.put('/deleteCurrentBrew', async function (req, res) {
+//     const userName = req.body.name
+//     const menuName = req.body.currentBrews.menuName
+//     const methodName = req.body.currentBrews.methodName
+//     const serve = req.body.currentBrews.serve
+//     const coffee = req.body.currentBrews.coffee
+//     const roasting = req.body.currentBrews.roasting
+//     const grind  = req.body.currentBrews.grind
 
-    try {
-        const resetCureentRecipe = await FHB.findOneAndUpdate({
-            "name" : userName
-        }, {
-            $set:{
-                "currentBrews.menuName" : menuName,
-                "currentBrews.methodName" : methodName,
-                "currentBrews.serve" : serve,
-                "currentBrews.coffee" : coffee,
-                "currentBrews.roasting" : roasting,
-                "currentBrews.grind" : grind
-        }
-        }, {
-            new: true,
-            runValidators: true
-        })
-        console.log("resetCureentRecipe!");
-        res.status(200).json(resetCureentRecipe);
-    } catch (error) {
-        console.log(error)
-    }
-})
+//     try {
+//         const resetCureentRecipe = await FHB.findOneAndUpdate({
+//             "name" : userName
+//         }, {
+//             $set:{
+//                 "currentBrews.menuName" : menuName,
+//                 "currentBrews.methodName" : methodName,
+//                 "currentBrews.serve" : serve,
+//                 "currentBrews.coffee" : coffee,
+//                 "currentBrews.roasting" : roasting,
+//                 "currentBrews.grind" : grind
+//         }
+//         }, {
+//             new: true,
+//             runValidators: true
+//         })
+//         console.log("resetCureentRecipe!");
+//         res.status(200).json(resetCureentRecipe);
+//     } catch (error) {
+//         console.log(error)
+//     }
+// })
 
 //PUT Description for favourite
 app.put('/updateDescription', async function (req, res) {
