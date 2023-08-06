@@ -68,7 +68,7 @@ app.get ('/getOldbrews', async (req, res) => {
     console.log(req.query)
 
     try {
-        const user = await FHB.findOne(req.query);
+        const user = await FHB.findOne({ email: req.query.email });
 
         res.send(user.oldBrews);
         console.log("Sent history");
@@ -79,9 +79,10 @@ app.get ('/getOldbrews', async (req, res) => {
 
 //GET favourites from DB
 app.get ('/getFavourites', async (req, res) => {
+    console.log(req.query)
 
     try {
-        const user = await FHB.findOne(req.query);
+        const user = await FHB.findOne({ email: req.query.email });
 
         res.send(user.favourites);
         console.log(user.favourites)
@@ -145,7 +146,7 @@ app.post('/saveHistory', async function (req, res) {
         }
 
         res.send(user.oldBrews)
-        console.log("History!")
+        console.log("History Saved!")
 
     } catch (error) {
         console.log(error)
@@ -293,6 +294,31 @@ app.post('/saveFavourites', async function (req, res) {
 //         console.log(error)
 //     }
 // })
+
+//PUT update Name for favourite(custom)
+app.put('/updateFavDetails', async function (req, res) {
+    const userEmail = req.body.email
+    const newFavs = req.body.favourites
+    const newMenuName = req.body.favourites[0].menuName
+    console.log(userEmail, newMenuName)
+
+    try {
+        const updateMenuName = await FHB.findOneAndUpdate(
+        {
+            "email" : userEmail
+        }, {
+            $set:{
+            "favourites" : newFavs
+        }
+        }, {
+            new: true,
+            runValidators: true
+        });
+        res.status(200).send(updateMenuName);
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 //PUT Description for favourite
 app.put('/updateDescription', async function (req, res) {
