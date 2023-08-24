@@ -2,9 +2,11 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 const bodyParser = require("body-parser")
-const connectDB = require('./database.js')
+const connectDB = require('./database.js');
+const { error } = require('console');
 const FHB = require(('./model/userData.js'))
 
 const port = process.env.PORT
@@ -99,6 +101,9 @@ app.post('/register', async function (req, res) {
     const userPassword = req.body.password;
     const userOldBrews  = req.body.oldBrews;
     const userFavs  = req.body.favourites;
+
+    bcrypt.hash(userPassword, saltRounds, (error, hash) => {
+    })
 
     const exisitingEmail = await FHB.findOne({ email: userEmail })
 
