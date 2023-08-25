@@ -3,6 +3,7 @@ const app = express();
 const path = require('path');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser')
 const saltRounds = 10;
 const bodyParser = require("body-parser")
 const connectDB = require('./database.js');
@@ -12,29 +13,55 @@ require('dotenv').config();
 const port = process.env.PORT
 
 //import JWT token function from other file.
-const jwtToken = require('./auth/jwt.js');
+const jwtUtils = require('./auth/jwt.js')
 
 connectDB();
 
 app.use(express.json());
+app.use(cookieParser());
+app.use(bodyParser.json())
 
 //cors setting
 app.use(cors({
     origin: "http://localhost:3000",
-    methods: ["get", "post"],
+    methods: ["GET", "POST"],
     credentials: true
 }));
 
+//Cookie API
+app.get('/isAuth', (req, res) => {
+    const accessToken = req.cookies.accessToken;
+    const refreshToken = req.cookies.refreshToken;
 
-app.use(bodyParser.json())
-
-app.get ('/', (req, res) => {
     try {
-        console.log(req.session);
-    } catch (error) {
-        console.log(error)
+        const decodedAccess = jwtUtils.verifyAccessToken(accessToken);
+        if (!decodedAccess) {
+
+            const decodedRefresh = jwtUtils.verifyRefreshToken(refreshToken);
+
+            if (!decodedRefresh) {
+                return res.send('user need to login Again')
+            } else {
+                const newAccessToken = jwtUtils.postAccessToken(decodedRefresh)
+
+                res.cookie("accessToken", newAccessToken, {
+                    secure: false,
+                    httpOnly: true
+                });
+
+                res.sendStatus(200);
+            }
+        } else {
+            res.sendStatus(200)
+        }
+    }
+    catch (err) {
+        console.log(err)
+        res.sendStatus(500);
     }
 })
+
+
 
 //basic router setting
 app.use(express.static(path.join(__dirname, '../front-end/homebrewing/build')));
@@ -135,7 +162,6 @@ app.get ('/login', async (req, res) => {
             email: userEmail
         })
         const data = userInfo
-        console.log(data)
         
         bcrypt.compare(userPassword, data.password, (error, result) => {
             try {
@@ -150,9 +176,8 @@ app.get ('/login', async (req, res) => {
             }
         })
 
-        //GET JWT TOKEN
-        const accessToken = jwtToken.getAccessToken(result);
-        const refreshToken = jwtToken.getRefreshToken(result);
+        const accessToken = jwtUtils.postAccessToken(data);
+        const refreshToken = jwtUtils.postRefreshToken(data);
 
         //Send JWT token in the cookie
         try {
@@ -169,7 +194,7 @@ app.get ('/login', async (req, res) => {
         } catch (error) {
             console.log("cookies not working")
             res.status(403).send('cookie doesnt sent')
-        }   
+        }
     }
     catch (error) {
         console.log(error)

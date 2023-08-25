@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken')
-const cors = require('cors');
 require('dotenv').config();
 
-const getAccessToken = (userData) => {
+//Post tokens
+const postAccessToken = (userData) => {
     try {
         const token = jwt.sign({
             userEmail:userData.email,
@@ -17,8 +17,7 @@ const getAccessToken = (userData) => {
         console.log(error)
     }
 }
-
-const getRefreshToken = (userData) => {
+const postRefreshToken = (userData) => {
     try {
         const token = jwt.sign({
             userEmail:userData.email,
@@ -34,7 +33,27 @@ const getRefreshToken = (userData) => {
     }
 }
 
+//verify tokens
+const verifyAccessToken = (accessToken) => {
+    try {
+        const decoded = jwt.verify(accessToken, process.env.ACCESS_SECRET)
+        return decoded
+    } catch (error) {
+        console.log(error)
+    }
+}
+const verifyRefreshToken = (refreshToken) => {
+    try {
+        const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET)
+        return decoded
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 module.exports = {
-    getAccessToken,
-    getRefreshToken
+    postAccessToken,
+    postRefreshToken,
+    verifyAccessToken,
+    verifyRefreshToken
 };
