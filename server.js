@@ -3,18 +3,29 @@ const app = express();
 const path = require('path');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
-require('dotenv').config();
+const saltRounds = 10;
 const bodyParser = require("body-parser")
 const connectDB = require('./database.js');
-const { error } = require('console');
 const FHB = require(('./model/userData.js'))
+require('dotenv').config();
 
 const port = process.env.PORT
+
+//import JWT token function from other file.
+const jwtToken = require('./auth/jwt.js');
 
 connectDB();
 
 app.use(express.json());
-app.use(cors());
+
+//cors setting
+app.use(cors({
+    origin: "http://localhost:3000",
+    methods: ["get", "post"],
+    credentials: true
+}));
+
+
 app.use(bodyParser.json())
 
 app.get ('/', (req, res) => {
@@ -30,26 +41,6 @@ app.use(express.static(path.join(__dirname, '../front-end/homebrewing/build')));
 app.get('/', (res, req) => {
     req.sendFile(path.join(__dirname, '../front-end/homebrewing/build/index.html'));
   })
-
-// GET user data for login
-app.get ('/login', async (req, res) => {
-    console.log(req.query)
-    const userEmail = req.query.email
-    const userPassword = req.query.password
-
-    try {
-        const userInfo = await FHB.findOne({
-            email: userEmail,
-            password: userPassword
-        })
-        res.send(userInfo)
-        console.log(userInfo.email, "LoggedIn!")
-    } 
-    catch (error) {
-        console.log(error)
-        res.send(error)
-    }
-})
 
 // GET current brewing information
 app.get ('/finish', async (req, res) => {
@@ -102,32 +93,86 @@ app.post('/register', async function (req, res) {
     const userOldBrews  = req.body.oldBrews;
     const userFavs  = req.body.favourites;
 
-    bcrypt.hash(userPassword, saltRounds, (error, hash) => {
-    })
-
-    const exisitingEmail = await FHB.findOne({ email: userEmail })
-
-    if (exisitingEmail) {
-        res.sendStatus(400);
-    } else {
+    bcrypt.hash(userPassword, saltRounds, async (error, hash) => {
         
-        try {
+        const exisitingEmail = await FHB.findOne({ email: userEmail })
     
-         const newUser = await new FHB({
-                email : userEmail,
-                password: userPassword,
-                oldBrews: userOldBrews,
-                favourites: userFavs
-            });
-            await newUser.save();
+        if (exisitingEmail) {
+            res.sendStatus(400);
+        } else if (error) {
+            res.send({error :error})
+        } else {
+            
+            try {
+        
+             const newUser = await new FHB({
+                    email : userEmail,
+                    password: hash,
+                    oldBrews: userOldBrews,
+                    favourites: userFavs
+                });
+                await newUser.save();
+        
+                res.send(newUser._id);
+                console.log("Register Successed!")
     
-            res.send(newUser._id);
-            console.log("Register Successed!")
+            } catch (error) {
+                console.log(error);
+                res.sendStatus(404)
+            }   
+        }
+    })
+})
 
+// GET user data for login
+app.get ('/login', async (req, res) => {
+    console.log(req.query)
+    const userEmail = req.query.email
+    const userPassword = req.query.password
+
+    try {
+        const userInfo = await FHB.findOne({
+            email: userEmail
+        })
+        const data = userInfo
+        console.log(data)
+        
+        bcrypt.compare(userPassword, data.password, (error, result) => {
+            try {
+                if (result) {
+                    res.send(userInfo)
+                } else if (!result) {
+                    res.send("password is not matching!")
+                }
+            }
+            catch (error) {
+                console.log(error)
+            }
+        })
+
+        //GET JWT TOKEN
+        const accessToken = jwtToken.getAccessToken(result);
+        const refreshToken = jwtToken.getRefreshToken(result);
+
+        //Send JWT token in the cookie
+        try {
+            res.cookie("accessToken", accessToken, {
+                secure: false,
+                httpOnly: true
+            })
+            res.cookie("refreshToken", refreshToken, {
+                secure: false,
+                httpOnly: true
+            })
+            res.status(200)
+            console.log(userInfo.email, "LoggedIn!")
         } catch (error) {
-            console.log(error);
-            res.sendStatus(404)
+            console.log("cookies not working")
+            res.status(403).send('cookie doesnt sent')
         }   
+    }
+    catch (error) {
+        console.log(error)
     }
 })
 
