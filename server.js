@@ -2,9 +2,6 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const cors = require('cors');
-const bcrypt = require('bcrypt');
-const cookieParser = require('cookie-parser')
-const saltRounds = 10;
 const bodyParser = require("body-parser")
 const connectDB = require('./database.js');
 const FHB = require(('./model/userData.js'))
@@ -12,8 +9,15 @@ require('dotenv').config();
 
 const port = process.env.PORT
 
+// Auth settings
+
 //import JWT token function from other file.
-const jwtUtils = require('./auth/jwt.js')
+const jwtUtils = require('./auth/jwt.js');
+//cookie parser
+const cookieParser = require('cookie-parser')
+//bcrypt password hashing
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 connectDB();
 
@@ -24,7 +28,7 @@ app.use(bodyParser.json())
 //cors setting
 app.use(cors({
     origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }));
 
@@ -40,7 +44,7 @@ app.get('/isAuth', (req, res) => {
             const decodedRefresh = jwtUtils.verifyRefreshToken(refreshToken);
 
             if (!decodedRefresh) {
-                return res.send('user need to login Again')
+                return res.send('user need to login Again').status(403)
             } else {
                 const newAccessToken = jwtUtils.postAccessToken(decodedRefresh)
 
@@ -49,18 +53,24 @@ app.get('/isAuth', (req, res) => {
                     httpOnly: true
                 });
 
-                res.sendStatus(200);
+                return res.sendStatus(200);
             }
         } else {
-            res.sendStatus(200)
+            res.send(decodedAccess)
         }
     }
     catch (err) {
         console.log(err)
-        res.sendStatus(500);
+        res.status(500);
     }
 })
-
+app.get('/logOut', (req, res) => {
+    try {
+        res.cookie('accessToken', '').cookie('refreshToken', '').send("Cookies deleted")
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 
 //basic router setting
@@ -263,11 +273,9 @@ app.post('/saveFavourites', async function (req, res) {
 app.put('/updateFavDetails', async function (req, res) {
     const userEmail = req.body.email
     const newFavs = req.body.favourites
-    const newMenuName = req.body.favourites[0].menuName
-    console.log(userEmail, newMenuName)
 
     try {
-        const updateMenuName = await FHB.findOneAndUpdate(
+        const updateFavDetail = await FHB.findOneAndUpdate(
         {
             "email" : userEmail
         }, {
@@ -278,7 +286,7 @@ app.put('/updateFavDetails', async function (req, res) {
             new: true,
             runValidators: true
         });
-        res.status(200).send(updateMenuName);
+        res.status(200).send(updateFavDetail);
     } catch (error) {
         console.log(error)
     }
@@ -315,11 +323,11 @@ app.delete('/deleteFav', async function(req, res)  {
     try {
 
             const deleteFav = await FHB.updateOne(
-                {}, 
-                { $pull: {"favourites" :{ favName: favName}}
+                {"favourites.favName": favName}, 
+                { $pull: {"favourites" :{ favName: favName } }
             });
-            console.log("Fav Deleted!")
-            res.send(deleteFav)
+            console.log("Fav Deleted!");
+            res.send("Favorite deleted successfully.");
     } catch (error) {
         console.log(error)
     }
