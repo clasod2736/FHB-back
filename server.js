@@ -2,52 +2,82 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const cors = require('cors');
-require('dotenv').config();
 const bodyParser = require("body-parser")
-const connectDB = require('./database.js')
+const connectDB = require('./database.js');
 const FHB = require(('./model/userData.js'))
+require('dotenv').config();
 
 const port = process.env.PORT
+
+// Auth settings
+
+//import JWT token function from other file.
+const jwtUtils = require('./auth/jwt.js');
+//cookie parser
+const cookieParser = require('cookie-parser')
+//bcrypt password hashing
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 connectDB();
 
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser());
 app.use(bodyParser.json())
 
-app.get ('/', (req, res) => {
+//cors setting
+app.use(cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+}));
+
+//Cookie API
+app.get('/isAuth', (req, res) => {
+    const accessToken = req.cookies.accessToken;
+    const refreshToken = req.cookies.refreshToken;
+
     try {
-        console.log(req.session);
+        const decodedAccess = jwtUtils.verifyAccessToken(accessToken);
+        if (!decodedAccess) {
+
+            const decodedRefresh = jwtUtils.verifyRefreshToken(refreshToken);
+
+            if (!decodedRefresh) {
+                return res.send('user need to login Again').status(403)
+            } else {
+                const newAccessToken = jwtUtils.postAccessToken(decodedRefresh)
+
+                res.cookie("accessToken", newAccessToken, {
+                    secure: false,
+                    httpOnly: true
+                });
+
+                return res.sendStatus(200);
+            }
+        } else {
+            res.send(decodedAccess)
+        }
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500);
+    }
+})
+app.get('/logOut', (req, res) => {
+    try {
+        res.cookie('accessToken', '').cookie('refreshToken', '').send("Cookies deleted")
     } catch (error) {
         console.log(error)
     }
 })
+
 
 //basic router setting
 app.use(express.static(path.join(__dirname, '../front-end/homebrewing/build')));
 app.get('/', (res, req) => {
     req.sendFile(path.join(__dirname, '../front-end/homebrewing/build/index.html'));
   })
-
-// GET user data for login
-app.get ('/login', async (req, res) => {
-    console.log(req.query)
-    const userEmail = req.query.email
-    const userPassword = req.query.password
-
-    try {
-        const userInfo = await FHB.findOne({
-            email: userEmail,
-            password: userPassword
-        })
-        res.send(userInfo)
-        console.log(userInfo.email, "LoggedIn!")
-    } 
-    catch (error) {
-        console.log(error)
-        res.send(error)
-    }
-})
 
 // GET current brewing information
 app.get ('/finish', async (req, res) => {
@@ -100,29 +130,84 @@ app.post('/register', async function (req, res) {
     const userOldBrews  = req.body.oldBrews;
     const userFavs  = req.body.favourites;
 
-    const exisitingEmail = await FHB.findOne({ email: userEmail })
-
-    if (exisitingEmail) {
-        res.sendStatus(400);
-    } else {
+    bcrypt.hash(userPassword, saltRounds, async (error, hash) => {
         
-        try {
+        const exisitingEmail = await FHB.findOne({ email: userEmail })
     
-         const newUser = await new FHB({
-                email : userEmail,
-                password: userPassword,
-                oldBrews: userOldBrews,
-                favourites: userFavs
-            });
-            await newUser.save();
+        if (exisitingEmail) {
+            res.sendStatus(400);
+        } else if (error) {
+            res.send({error :error})
+        } else {
+            
+            try {
+        
+             const newUser = await new FHB({
+                    email : userEmail,
+                    password: hash,
+                    oldBrews: userOldBrews,
+                    favourites: userFavs
+                });
+                await newUser.save();
+        
+                res.send(newUser._id);
+                console.log("Register Successed!")
     
-            res.send(newUser._id);
-            console.log("Register Successed!")
+            } catch (error) {
+                console.log(error);
+                res.sendStatus(404)
+            }   
+        }
+    })
+})
 
+// GET user data for login
+app.get ('/login', async (req, res) => {
+    console.log(req.query)
+    const userEmail = req.query.email
+    const userPassword = req.query.password
+
+    try {
+        const userInfo = await FHB.findOne({
+            email: userEmail
+        })
+        const data = userInfo
+        
+        bcrypt.compare(userPassword, data.password, (error, result) => {
+            try {
+                if (result) {
+                    res.send(userInfo)
+                } else if (!result) {
+                    res.send("password is not matching!")
+                }
+            }
+            catch (error) {
+                console.log(error)
+            }
+        })
+
+        const accessToken = jwtUtils.postAccessToken(data);
+        const refreshToken = jwtUtils.postRefreshToken(data);
+
+        //Send JWT token in the cookie
+        try {
+            res.cookie("accessToken", accessToken, {
+                secure: false,
+                httpOnly: true
+            })
+            res.cookie("refreshToken", refreshToken, {
+                secure: false,
+                httpOnly: true
+            })
+            res.status(200)
+            console.log(userInfo.email, "LoggedIn!")
         } catch (error) {
-            console.log(error);
-            res.sendStatus(404)
-        }   
+            console.log("cookies not working")
+            res.status(403).send('cookie doesnt sent')
+        }
+    }
+    catch (error) {
+        console.log(error)
     }
 })
 
@@ -188,11 +273,9 @@ app.post('/saveFavourites', async function (req, res) {
 app.put('/updateFavDetails', async function (req, res) {
     const userEmail = req.body.email
     const newFavs = req.body.favourites
-    const newMenuName = req.body.favourites[0].menuName
-    console.log(userEmail, newMenuName)
 
     try {
-        const updateMenuName = await FHB.findOneAndUpdate(
+        const updateFavDetail = await FHB.findOneAndUpdate(
         {
             "email" : userEmail
         }, {
@@ -203,7 +286,7 @@ app.put('/updateFavDetails', async function (req, res) {
             new: true,
             runValidators: true
         });
-        res.status(200).send(updateMenuName);
+        res.status(200).send(updateFavDetail);
     } catch (error) {
         console.log(error)
     }
@@ -240,11 +323,11 @@ app.delete('/deleteFav', async function(req, res)  {
     try {
 
             const deleteFav = await FHB.updateOne(
-                {}, 
-                { $pull: {"favourites" :{ favName: favName}}
+                {"favourites.favName": favName}, 
+                { $pull: {"favourites" :{ favName: favName } }
             });
-            console.log("Fav Deleted!")
-            res.send(deleteFav)
+            console.log("Fav Deleted!");
+            res.send("Favorite deleted successfully.");
     } catch (error) {
         console.log(error)
     }
