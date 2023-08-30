@@ -37,7 +37,7 @@ const postRefreshToken = (userData) => {
 const verifyAccessToken = (accessToken) => {
     try {
         const decoded = jwt.verify(accessToken, process.env.ACCESS_SECRET)
-        return decoded
+        return decoded;
     } catch (error) {
         console.log(error)
     }
