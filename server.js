@@ -9,8 +9,6 @@ require('dotenv').config();
 
 const port = process.env.PORT
 
-// Auth settings
-
 //import JWT token function from other file.
 const jwtUtils = require('./auth/jwt.js');
 //cookie parser
@@ -225,9 +223,9 @@ app.post('/saveHistory', async function (req, res) {
                 // If the array has 10 or more elements, remove the oldest one
                 user.oldBrews.shift();
             }
-
-            user.oldBrews.push(oldBrews);
+            
             await user.save();
+            user.oldBrews.push(oldBrews);
         }
 
         res.send(user.oldBrews)
