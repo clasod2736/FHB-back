@@ -7,7 +7,7 @@ const connectDB = require("./database.js");
 const FHB = require("./model/userData.js");
 require("dotenv").config();
 
-const port = process.env.PORT || 8080;
+// const port = process.env.PORT || 8080;
 
 //import JWT token function from other file.
 const jwtUtils = require("./auth/jwt.js");
@@ -341,6 +341,4 @@ app.delete("/deleteFav", async function (req, res) {
   }
 });
 
-app.listen(port, () => {
-  console.log(`listening on ${port}`);
-});
+app.listen(process.env.PORT || 8080);
