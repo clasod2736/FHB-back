@@ -23,6 +23,7 @@ connectDB();
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());
+app.use(express.static("build"));
 
 //cors setting
 app.use(
@@ -71,7 +72,6 @@ app.get("/isAuth", (req, res) => {
     res.sendStatus(500);
   }
 });
-
 app.get("/logOut", (req, res) => {
   try {
     res.cookie("accessToken", undefined).cookie("refreshToken", undefined).send("Cookies deleted");
