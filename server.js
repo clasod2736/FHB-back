@@ -68,7 +68,7 @@ app.get("/isAuth", (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    res.sendStatus(500).send("NO Access Token");
+    res.sendStatus(500);
   }
 });
 
@@ -241,7 +241,7 @@ app.post("/saveHistory", async function (req, res) {
     console.log("History Saved!");
   } catch (error) {
     console.log(error);
-    res.status(500).send("Server Error");
+    res.send("Server Error");
   }
 });
 
