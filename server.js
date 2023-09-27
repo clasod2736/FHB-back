@@ -7,7 +7,7 @@ const connectDB = require("./database.js");
 const FHB = require("./model/userData.js");
 require("dotenv").config();
 
-const port = process.env.PORT;
+const port = process.env.PORT || 8080;
 
 //import JWT token function from other file.
 const jwtUtils = require("./auth/jwt.js");
