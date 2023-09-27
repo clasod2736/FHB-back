@@ -14,7 +14,7 @@ const FHBSchema = new Schema({
         date: String,
         menuName: String,
         methodName: String,
-        water: Number,
+        water: String,
         coffee: Number,
         roasting: String,
         grind: String
@@ -25,7 +25,7 @@ const FHBSchema = new Schema({
         date: String,
         menuName: String,
         methodName: String,
-        water: Number,
+        water: String,
         coffee: Number,
         roasting: String,
         grind: String,
