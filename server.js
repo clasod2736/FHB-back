@@ -1,11 +1,6 @@
 const express = require("express");
-const app = express();
-const path = require("path");
 const cors = require("cors");
-const bodyParser = require("body-parser");
-const connectDB = require("./database.js");
-const FHB = require("./model/userData.js");
-require("dotenv").config();
+const app = express();
 
 //cors setting
 app.use(
@@ -15,6 +10,12 @@ app.use(
     credentials: true,
   })
 );
+
+const path = require("path");
+const bodyParser = require("body-parser");
+const connectDB = require("./database.js");
+const FHB = require("./model/userData.js");
+require("dotenv").config();
 
 //import JWT token function from other file.
 const jwtUtils = require("./auth/jwt.js");
