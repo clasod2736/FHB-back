@@ -81,9 +81,9 @@ app.get("/logOut", (req, res) => {
 });
 
 //basic router setting
-app.use(express.static(path.join(__dirname, "https://main--voluble-kashata-776f36.netlify.app/")));
-app.get("/", (res, req) => {
-  req.sendFile(path.join(__dirname, "https://main--voluble-kashata-776f36.netlify.app/"));
+app.use(express.static(path.join(__dirname, "build")));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 // GET current brewing information
