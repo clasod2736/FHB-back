@@ -28,7 +28,7 @@ app.use(express.static("build"));
 //cors setting
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://main--voluble-kashata-776f36.netlify.app",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
