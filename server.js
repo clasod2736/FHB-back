@@ -81,9 +81,9 @@ app.get("/logOut", (req, res) => {
 });
 
 //basic router setting
-app.use(express.static(path.join(__dirname, "../front-end/homebrewing/build")));
+app.use(express.static(path.join(__dirname, "../front-end/build")));
 app.get("/", (res, req) => {
-  req.sendFile(path.join(__dirname, "../front-end/homebrewing/build/index.html"));
+  req.sendFile(path.join(__dirname, "../front-end/build/index.html"));
 });
 
 // GET current brewing information
