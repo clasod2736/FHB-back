@@ -40,6 +40,8 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.static("build"));
 
+console.log("Is it actually Executing??");
+
 //Cookie API
 app.get("/isAuth", (req, res) => {
   const accessToken = req.cookies.accessToken;
