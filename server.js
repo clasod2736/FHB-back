@@ -92,6 +92,11 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
+//TEST
+app.get("/", (req, res) => {
+  res.send("Hello from Express!");
+});
+
 // GET current brewing information
 app.get("/finish", async (req, res) => {
   console.log(req.query);
