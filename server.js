@@ -7,7 +7,14 @@ const connectDB = require("./database.js");
 const FHB = require("./model/userData.js");
 require("dotenv").config();
 
-// const port = process.env.PORT || 8080;
+//cors setting
+app.use(
+  cors({
+    origin: "https://main--voluble-kashata-776f36.netlify.app",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 //import JWT token function from other file.
 const jwtUtils = require("./auth/jwt.js");
@@ -24,15 +31,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.static("build"));
-
-//cors setting
-app.use(
-  cors({
-    origin: "https://main--voluble-kashata-776f36.netlify.app",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
 
 //Cookie API
 app.get("/isAuth", (req, res) => {
