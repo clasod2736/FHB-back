@@ -11,6 +11,13 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://main--voluble-kashata-776f36.netlify.app");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.header("Access-Control-Allow-Credentials", true);
+  next();
+});
+
 const path = require("path");
 const bodyParser = require("body-parser");
 const connectDB = require("./database.js");
