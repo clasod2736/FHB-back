@@ -62,7 +62,7 @@ app.get("/isAuth", (req, res) => {
         const newAccessToken = jwtUtils.postAccessToken(newPaylod);
 
         res.cookie("accessToken", newAccessToken, {
-          domain: "https://for-homey-barista-d91b9fe2a10e.herokuapp.com/",
+          domain: "https://for-homey-barista-d91b9fe2a10e.herokuapp.com",
           secure: true,
           httpOnly: true,
         });
@@ -216,12 +216,12 @@ app.post("/login", async (req, res) => {
       //Send JWT token in the cookie
       try {
         res.cookie("accessToken", accessToken, {
-          domain: "https://for-homey-barista-d91b9fe2a10e.herokuapp.com/",
+          domain: "https://for-homey-barista-d91b9fe2a10e.herokuapp.com",
           secure: true,
           httpOnly: true,
         });
         res.cookie("refreshToken", refreshToken, {
-          domain: "https://for-homey-barista-d91b9fe2a10e.herokuapp.com/",
+          domain: "https://for-homey-barista-d91b9fe2a10e.herokuapp.com",
           secure: true,
           httpOnly: true,
         });
