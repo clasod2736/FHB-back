@@ -89,9 +89,17 @@ app.get("/logOut", (req, res) => {
 });
 
 //basic router setting
-app.use(express.static(path.join(__dirname, "build")));
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
+// app.use(express.static(path.join(__dirname, "build")));
+// app.get("/", (req, res) => {
+//   res.sendFile(path.join(__dirname, "build", "index.html"));
+// });
+const serverDomain = "https://main--voluble-kashata-776f36.netlify.app/";
+app.get(serverDomain, (req, res) => {
+  try {
+    res.send(response.data);
+  } catch (error) {
+    res.send(error);
+  }
 });
 
 //TEST
