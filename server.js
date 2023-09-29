@@ -56,7 +56,7 @@ app.get("/isAuth", (req, res) => {
         res.cookie("accessToken", newAccessToken, {
           domain: "https://main--voluble-kashata-776f36.netlify.app/",
           secure: true,
-          httpOnly: true,
+          httpOnly: false,
         });
 
         res.send(decodedRefresh).sendStatus(200);
@@ -210,12 +210,12 @@ app.post("/login", async (req, res) => {
         res.cookie("accessToken", accessToken, {
           domain: "https://main--voluble-kashata-776f36.netlify.app/",
           secure: true,
-          httpOnly: true,
+          httpOnly: false,
         });
         res.cookie("refreshToken", refreshToken, {
           domain: "https://main--voluble-kashata-776f36.netlify.app/",
           secure: true,
-          httpOnly: true,
+          httpOnly: false,
         });
         res.status(200);
         console.log(userInfo.email, "LoggedIn!");
