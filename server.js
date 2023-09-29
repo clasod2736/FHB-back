@@ -184,8 +184,8 @@ app.post("/register", async function (req, res) {
   });
 });
 
-// GET user data for login
-app.get("/login", async (req, res) => {
+// POST user data for login
+app.post("/login", async (req, res) => {
   const userEmail = req.query.email;
   const userPassword = req.query.password;
 
