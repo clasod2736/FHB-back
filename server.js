@@ -56,7 +56,7 @@ app.get("/isAuth", (req, res) => {
         res.cookie("accessToken", newAccessToken, {
           secure: true,
           httpOnly: true,
-          sameSite: "none",
+          sameSite: "None",
         });
 
         res.send(decodedRefresh).sendStatus(200);
@@ -210,12 +210,12 @@ app.post("/login", async (req, res) => {
         res.cookie("accessToken", accessToken, {
           secure: true,
           httpOnly: true,
-          sameSite: "none",
+          sameSite: "None",
         });
         res.cookie("refreshToken", refreshToken, {
           secure: true,
           httpOnly: true,
-          sameSite: "none",
+          sameSite: "None",
         });
         res.status(200);
         console.log(userInfo.email, "LoggedIn!");
