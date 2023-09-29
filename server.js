@@ -54,7 +54,7 @@ app.get("/isAuth", (req, res) => {
         const newAccessToken = jwtUtils.postAccessToken(newPaylod);
 
         res.cookie("accessToken", newAccessToken, {
-          domain: "for-homey-barista-d91b9fe2a10e.herokuapp.com",
+          domain: "https://main--voluble-kashata-776f36.netlify.app/",
           secure: true,
           httpOnly: true,
         });
@@ -208,12 +208,12 @@ app.post("/login", async (req, res) => {
       //Send JWT token in the cookie
       try {
         res.cookie("accessToken", accessToken, {
-          domain: "for-homey-barista-d91b9fe2a10e.herokuapp.com",
+          domain: "https://main--voluble-kashata-776f36.netlify.app/",
           secure: true,
           httpOnly: true,
         });
         res.cookie("refreshToken", refreshToken, {
-          domain: "for-homey-barista-d91b9fe2a10e.herokuapp.com",
+          domain: "https://main--voluble-kashata-776f36.netlify.app/",
           secure: true,
           httpOnly: true,
         });
