@@ -54,7 +54,7 @@ app.get("/isAuth", (req, res) => {
         const newAccessToken = jwtUtils.postAccessToken(newPaylod);
 
         res.cookie("accessToken", newAccessToken, {
-          secure: true,
+          secure: false,
           httpOnly: true,
           sameSite: "None",
         });
@@ -208,19 +208,19 @@ app.post("/login", async (req, res) => {
       //Send JWT token in the cookie
       try {
         const accessCookie = res.cookie("accessToken", accessToken, {
-          secure: true,
+          secure: false,
           httpOnly: true,
           sameSite: "None",
         });
         const refreshCookie = res.cookie("refreshToken", refreshToken, {
-          secure: true,
+          secure: false,
           httpOnly: true,
           sameSite: "None",
         });
         res.status(200);
         console.log(userInfo.email, "LoggedIn!");
 
-        console.log(accessCookie, refreshCookie);
+        console.log(accessCookie.cookie, refreshCookie.cookie);
       } catch (error) {
         console.log("cookies not working");
         res.status(403).send("cookie doesnt sent");
