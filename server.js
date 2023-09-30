@@ -208,12 +208,12 @@ app.post("/login", async (req, res) => {
       //Send JWT token in the cookie
       try {
         const accessCookie = res.cookie("accessToken", accessToken, {
-          secure: false,
+          secure: true,
           httpOnly: true,
           sameSite: "None",
         });
         const refreshCookie = res.cookie("refreshToken", refreshToken, {
-          secure: false,
+          secure: true,
           httpOnly: true,
           sameSite: "None",
         });
