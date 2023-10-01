@@ -54,7 +54,8 @@ app.get("/isAuth", (req, res) => {
         const newAccessToken = jwtUtils.postAccessToken(newPaylod);
 
         res.cookie("accessToken", newAccessToken, {
-          domain: "https://main--voluble-kashata-776f36.netlify.app",
+          path: "/",
+          domain: "https://main--voluble-kashata-776f36.netlify.app/",
           secure: true,
           httpOnly: true,
           sameSite: "None",
@@ -209,13 +210,15 @@ app.post("/login", async (req, res) => {
       //Send JWT token in the cookie
       try {
         const accessCookie = res.cookie("accessToken", accessToken, {
-          domain: "https://main--voluble-kashata-776f36.netlify.app",
+          path: "/",
+          domain: "https://main--voluble-kashata-776f36.netlify.app/",
           secure: true,
           httpOnly: true,
           sameSite: "None",
         });
         const refreshCookie = res.cookie("refreshToken", refreshToken, {
-          domain: "https://main--voluble-kashata-776f36.netlify.app",
+          path: "/",
+          domain: "https://main--voluble-kashata-776f36.netlify.app/",
           secure: true,
           httpOnly: true,
           sameSite: "None",
