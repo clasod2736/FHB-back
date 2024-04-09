@@ -63,8 +63,8 @@ app.get("/isAuth", (req, res) => {
 
         res.send(decodedRefresh).sendStatus(200);
       } else if (decodedRefresh === undefined) {
-        res.sendStatus(404);
         console.log("decodedRefresh Err");
+        res.sendStatus(404);
       }
     } else {
       res.send(decodedAccess);
@@ -124,6 +124,22 @@ app.get("/getOldbrews", async (req, res) => {
 
     res.send(user.oldBrews);
     console.log("Sent history");
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.get("/getRecentbrew", async (req, res) => {
+  console.log(req.query);
+
+  try {
+    const user = await FHB.findOne({ email: req.query.email });
+
+    const sortedBrews = user.oldBrews.sort((a, b) => b.order - a.order);
+    const recentbrew = sortedBrews[0];
+
+    res.send(recentbrew);
+    console.log("Sent Recent Brew!");
   } catch (error) {
     console.log(error);
   }
