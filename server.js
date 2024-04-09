@@ -64,6 +64,7 @@ app.get("/isAuth", (req, res) => {
         res.send(decodedRefresh).sendStatus(200);
       } else if (decodedRefresh === undefined) {
         res.sendStatus(404);
+        console.log("decodedRefresh Err");
       }
     } else {
       res.send(decodedAccess);
