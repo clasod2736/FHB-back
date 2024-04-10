@@ -82,11 +82,6 @@ app.get("/logOut", (req, res) => {
   }
 });
 
-//basic router setting
-// app.use(express.static(path.join(__dirname, "build")));
-// app.get("/", (req, res) => {
-//   res.sendFile(path.join(__dirname, "build", "index.html"));
-// });
 const serverDomain = "https://main--voluble-kashata-776f36.netlify.app";
 app.get(serverDomain, (req, res) => {
   try {
@@ -123,12 +118,13 @@ app.get("/getOldbrews", async (req, res) => {
     const user = await FHB.findOne({ email: req.query.email });
 
     res.send(user.oldBrews);
-    console.log("Sent history");
+    console.log("Sent Old Brews");
   } catch (error) {
     console.log(error);
   }
 });
 
+//GET Recent Brew history.
 app.get("/getRecentbrew", async (req, res) => {
   console.log(req.query);
 
@@ -295,7 +291,7 @@ app.post("/saveFavourites", async function (req, res) {
     if (user) {
       if (user.favourites.length >= 5) {
         // If the array has 5 or more elements, remove the oldest one
-        res.status(422).send("failed");
+        res.status(422).send(false);
         return;
       } else if (user.favourites.length < 5) {
         user.favourites.push(favouriteBrews);
