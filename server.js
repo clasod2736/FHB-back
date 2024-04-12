@@ -30,7 +30,7 @@ const saltRounds = 10;
 connectDB();
 
 app.use(express.json());
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.static("build"));
 
