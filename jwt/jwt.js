@@ -1,13 +1,13 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-//Post tokens
+//create access tokens
 const postAccessToken = (userData) => {
   try {
     const token = jwt.sign(
       {
         email: userData.email,
-        password: userData.password,
+        id: userData._id,
       },
       process.env.ACCESS_SECRET,
       {
@@ -20,12 +20,14 @@ const postAccessToken = (userData) => {
     console.log(error);
   }
 };
+
+//create refresh tokens
 const postRefreshToken = (userData) => {
   try {
     const token = jwt.sign(
       {
         email: userData.email,
-        password: userData.password,
+        id: userData._id,
       },
       process.env.REFRESH_SECRET,
       {
@@ -48,6 +50,7 @@ const verifyAccessToken = (accessToken) => {
     console.log(error);
   }
 };
+
 const verifyRefreshToken = (refreshToken) => {
   try {
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET);

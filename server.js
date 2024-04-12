@@ -2,6 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 
+//cookie parser
+// const cookieParser = require("cookie-parser");
+
 //cors setting
 app.use(
   cors({
@@ -17,9 +20,8 @@ const FHB = require("./model/userData.js");
 require("dotenv").config();
 
 //import JWT token function from other file.
-const jwtUtils = require("./auth/jwt.js");
-//cookie parser
-const cookieParser = require("cookie-parser");
+const jwtUtils = require("./jwt/jwt.js");
+
 //bcrypt password hashing
 const bcrypt = require("bcrypt");
 const { send } = require("express/lib/response.js");
@@ -34,8 +36,8 @@ app.use(express.static("build"));
 
 //Cookie API
 app.get("/isAuth", (req, res) => {
-  const accessToken = req.cookies.accessToken;
-  const refreshToken = req.cookies.refreshToken;
+  const accessToken = req.headers.authorization.accessToken;
+  const refreshToken = req.headers.Refresh - Token.refreshToken;
 
   try {
     const decodedAccess = jwtUtils.verifyAccessToken(accessToken);
@@ -74,6 +76,7 @@ app.get("/isAuth", (req, res) => {
     res.sendStatus(500);
   }
 });
+
 app.get("/logOut", (req, res) => {
   try {
     res.cookie("accessToken", undefined).cookie("refreshToken", undefined).send("Cookies deleted");
@@ -220,32 +223,10 @@ app.post("/login", async (req, res) => {
       const accessToken = jwtUtils.postAccessToken(data);
       const refreshToken = jwtUtils.postRefreshToken(data);
 
-      //Send JWT token in the cookie
-      try {
-        const accessCookie = res.cookie("accessToken", accessToken, {
-          path: "/",
-          domain: "https://main--voluble-kashata-776f36.netlify.app/",
-          secure: true,
-          httpOnly: true,
-          sameSite: "none",
-        });
-        const refreshCookie = res.cookie("refreshToken", refreshToken, {
-          path: "/",
-          domain: "https://main--voluble-kashata-776f36.netlify.app/",
-          secure: true,
-          httpOnly: true,
-          sameSite: "none",
-        });
-        res.status(200);
-        console.log(userInfo.email, "LoggedIn!");
-
-        console.log(accessCookie.cookie, refreshCookie.cookie);
-      } catch (error) {
-        console.log("cookies not working");
-        res.status(403).send("cookie doesnt sent");
-      }
-    } else {
-      res.sendStatus(404);
+      //Send JWT tokento the client
+      res.setHeader("Authorization", accessToken);
+      res.setHeader("Refresh-Token", refreshToken);
+      res.sendStatus(200);
     }
   } catch (error) {
     console.log(error);
