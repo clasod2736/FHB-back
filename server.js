@@ -36,7 +36,7 @@ app.use(express.static("build"));
 
 //Cookie API
 app.get("/isAuth", (req, res) => {
-  const accessToken = req.headers.authorization.accessToken;
+  const accessToken = req.headers.Authorization.accessToken;
   const refreshToken = req.headers.Refresh - Token.refreshToken;
 
   try {
@@ -223,9 +223,7 @@ app.post("/login", async (req, res) => {
       const refreshToken = jwtUtils.postRefreshToken(data);
 
       // Send JWT tokento the client
-      res.setHeader("Authorization", accessToken);
-      res.setHeader("Refresh-Token", refreshToken);
-      res.send(userInfo);
+      res.send(userInfo, accessToken, refreshToken);
     }
   } catch (error) {
     console.log(error);
