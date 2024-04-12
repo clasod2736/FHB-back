@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const FHBSchema = new Schema({
   _id: {
-    type: string,
+    type: ObjectId,
   },
   email: {
     type: String,
