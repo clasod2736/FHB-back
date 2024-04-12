@@ -1,10 +1,11 @@
 const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
 
 const FHBSchema = new Schema({
   _id: {
-    type: Types.ObjectId,
+    type: ObjectId,
   },
   email: {
     type: String,
