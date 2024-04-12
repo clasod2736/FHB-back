@@ -37,21 +37,8 @@ app.use(express.static("build"));
 //Cookie API
 app.get("/isAuth", (req, res) => {
   //check tokens
-  const authorizationHeader = req.headers.authorization;
-  console.log(authorizationHeader);
-
-  if (authorizationHeader) {
-    const [scheme, token] = authorizationHeader.split(" ");
-
-    if (scheme === "Bearer") {
-      const accessToken = token;
-      console.log("access", accessToken);
-    }
-    //  else if (scheme === "RefreshToken") {
-    //   const refreshToken = token;
-    //   console.log("refresh", refreshToken);
-    // }
-  }
+  const accessToken = req.headers.authorization;
+  const refreshToken = req.headers["refresh-token"];
 
   try {
     const decodedAccess = jwtUtils.verifyAccessToken(accessToken);
