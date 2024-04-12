@@ -36,7 +36,7 @@ app.use(express.static("build"));
 
 //Cookie API
 app.get("/isAuth", (req, res) => {
-  const accessToken = req.headers.accessToken;
+  const accessToken = req.headers.authorization;
   const refreshToken = req.headers.refreshToken;
   console.log("access", accessToken);
   console.log("refresh", refreshToken);
