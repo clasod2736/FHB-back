@@ -36,8 +36,9 @@ app.use(express.static("build"));
 
 //Cookie API
 app.get("/isAuth", (req, res) => {
-  const accessToken = req.headers.Authorization.accessToken;
-  const refreshToken = req.headers.Refresh - Token.refreshToken;
+  const accessToken = req.headers.accessToken;
+  const refreshToken = req.headers.refreshToken;
+  console.log(accessToken, refreshToken);
 
   try {
     const decodedAccess = jwtUtils.verifyAccessToken(accessToken);
