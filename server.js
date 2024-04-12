@@ -220,8 +220,8 @@ app.post("/login", async (req, res) => {
         }
       });
 
-      const accessToken = jwtUtils.postAccessToken(data);
-      const refreshToken = jwtUtils.postRefreshToken(data);
+      // const accessToken = jwtUtils.postAccessToken(data);
+      // const refreshToken = jwtUtils.postRefreshToken(data);
 
       //preflight
       // res.header("Access-Control-Allow-Origin", "https://main--voluble-kashata-776f36.netlify.app");
@@ -230,8 +230,8 @@ app.post("/login", async (req, res) => {
       // res.header("Access-Control-Allow-Credentials", true);
 
       //Send JWT tokento the client
-      res.setHeader("Authorization", accessToken);
-      res.setHeader("Refresh-Token", refreshToken);
+      // res.setHeader("Authorization", accessToken);
+      // res.setHeader("Refresh-Token", refreshToken);
       res.sendStatus(200);
     }
   } catch (error) {
