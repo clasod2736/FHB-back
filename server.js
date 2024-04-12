@@ -38,7 +38,8 @@ app.use(express.static("build"));
 app.get("/isAuth", (req, res) => {
   const accessToken = req.headers.accessToken;
   const refreshToken = req.headers.refreshToken;
-  console.log(accessToken, refreshToken);
+  console.log("access", accessToken);
+  console.log("refresh", refreshToken);
 
   try {
     const decodedAccess = jwtUtils.verifyAccessToken(accessToken);
