@@ -29,7 +29,7 @@ const postRefreshToken = (userData) => {
       },
       process.env.REFRESH_SECRET,
       {
-        expiresIn: "48h",
+        expiresIn: "24h",
         issuer: "user",
       }
     );

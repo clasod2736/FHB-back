@@ -290,7 +290,6 @@ app.post("/saveFavourites", async function (req, res) {
 
     if (user) {
       if (user.favourites.length >= 5) {
-        // If the array has 5 or more elements, remove the oldest one
         res.status(422).send(true);
         return;
       } else if (user.favourites.length < 5) {
