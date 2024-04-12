@@ -86,6 +86,7 @@ app.get("/logOut", (req, res) => {
 });
 
 const serverDomain = "https://main--voluble-kashata-776f36.netlify.app";
+
 app.get(serverDomain, (req, res) => {
   try {
     res.send(response.data);
@@ -210,8 +211,6 @@ app.post("/login", async (req, res) => {
         try {
           if (data.password === null) {
             res.sendStatus(400), send(express);
-          } else if (result) {
-            res.send(userInfo);
           } else if (!result) {
             res.sendStatus(404);
           }
