@@ -44,13 +44,12 @@ app.get("/isAuth", (req, res) => {
 
     if (scheme === "Bearer") {
       const accessToken = token;
+      console.log("access", accessToken);
     } else if (scheme === "RefreshToken") {
       const refreshToken = token;
+      console.log("refresh", refreshToken);
     }
   }
-
-  console.log("access", accessToken);
-  console.log("refresh", refreshToken);
 
   try {
     const decodedAccess = jwtUtils.verifyAccessToken(accessToken);
