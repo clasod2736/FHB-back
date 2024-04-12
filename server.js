@@ -38,6 +38,7 @@ app.use(express.static("build"));
 app.get("/isAuth", (req, res) => {
   //check tokens
   const authorizationHeader = req.headers.authorization;
+  console.log(authorizationHeader);
 
   if (authorizationHeader) {
     const [scheme, token] = authorizationHeader.split(" ");
@@ -45,10 +46,11 @@ app.get("/isAuth", (req, res) => {
     if (scheme === "Bearer") {
       const accessToken = token;
       console.log("access", accessToken);
-    } else if (scheme === "RefreshToken") {
-      const refreshToken = token;
-      console.log("refresh", refreshToken);
     }
+    //  else if (scheme === "RefreshToken") {
+    //   const refreshToken = token;
+    //   console.log("refresh", refreshToken);
+    // }
   }
 
   try {
