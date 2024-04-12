@@ -220,26 +220,26 @@ app.post("/login", async (req, res) => {
         }
       });
 
-      // const accessToken = jwtUtils.postAccessToken(data);
-      // const refreshToken = jwtUtils.postRefreshToken(data);
+      const accessToken = jwtUtils.postAccessToken(data);
+      const refreshToken = jwtUtils.postRefreshToken(data);
 
-      //preflight
+      // preflight
       // res.header("Access-Control-Allow-Origin", "https://main--voluble-kashata-776f36.netlify.app");
       // res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
       // res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
       // res.header("Access-Control-Allow-Credentials", true);
 
-      //Send JWT tokento the client
-      // res.setHeader("Authorization", accessToken);
-      // res.setHeader("Refresh-Token", refreshToken);
-      res.sendStatus(200);
+      // Send JWT tokento the client
+      res.setHeader("Authorization", accessToken);
+      res.setHeader("Refresh-Token", refreshToken);
+      res.send(userInfo);
     }
   } catch (error) {
     console.log(error);
   }
 });
 
-//POST data oldBrews in database
+//POST data oldBrews in databas
 app.post("/saveHistory", async function (req, res) {
   const userEmail = req.body.email;
   const oldBrews = req.body.oldBrews[0];
