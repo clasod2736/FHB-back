@@ -224,10 +224,10 @@ app.post("/login", async (req, res) => {
       const refreshToken = jwtUtils.postRefreshToken(data);
 
       //preflight
-      res.header("Access-Control-Allow-Origin", "https://main--voluble-kashata-776f36.netlify.app");
-      res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-      res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-      res.header("Access-Control-Allow-Credentials", true);
+      // res.header("Access-Control-Allow-Origin", "https://main--voluble-kashata-776f36.netlify.app");
+      // res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+      // res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+      // res.header("Access-Control-Allow-Credentials", true);
 
       //Send JWT tokento the client
       res.setHeader("Authorization", accessToken);
