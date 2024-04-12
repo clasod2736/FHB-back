@@ -221,9 +221,15 @@ app.post("/login", async (req, res) => {
 
       const accessToken = jwtUtils.postAccessToken(data);
       const refreshToken = jwtUtils.postRefreshToken(data);
+      console.log(accessToken);
+      console.log(refreshToken);
 
       // Send JWT tokento the client
-      res.send(userInfo, accessToken, refreshToken);
+      res.json({
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        userInfo: userInfo,
+      });
     }
   } catch (error) {
     console.log(error);
