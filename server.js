@@ -74,7 +74,7 @@ app.get("/logOut", (req, res) => {
   }
 });
 
-const serverDomain = "https://main--voluble-kashata-776f36.netlify.app";
+const serverDomain = "https://voluble-kashata-776f36.netlify.app";
 
 app.get(serverDomain, (req, res) => {
   try {
