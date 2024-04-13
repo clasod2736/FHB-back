@@ -33,6 +33,7 @@ router.get("/isAuth", (req, res) => {
           userEmail: newPayload.email,
         })
         .status(200);
+      console.log("New access token generated");
     } else res.sendStatus(302);
   } catch (err) {
     console.log(err);
