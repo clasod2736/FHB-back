@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const jwtUtils = require("../jwt/jwt");
+const jwtUtils = require("../../jwt/jwt");
 const { send } = require("express/lib/response.js");
 
 router.post("/login", async (req, res) => {
