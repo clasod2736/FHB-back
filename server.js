@@ -8,7 +8,7 @@ const jwtUtils = require("./jwt/jwt.js");
 require("dotenv").config();
 
 // RestfulAPIs
-const isAuthRouter = require("./isAuth.js");
+const isAuthRouter = require("./auth/isAuth.js");
 
 //bcrypt password hashing
 const bcrypt = require("bcrypt");
@@ -86,6 +86,7 @@ app.use(isAuthRouter);
 // });
 
 // GET current brewing information
+
 app.get("/finish", async (req, res) => {
   try {
     const userName = await FHB.findOne(req.query);
