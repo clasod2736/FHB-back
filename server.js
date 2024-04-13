@@ -46,11 +46,12 @@ app.get("/", (req, res) => {
   res.send(`"Server is running...", "Current client sied domain:" ${clientDomain}`);
 });
 
-//Cookie API
+//Auth with JWT tokens
 app.get("/isAuth", (req, res) => {
   //load tokens
   const accessToken = req.headers.authorization;
   const refreshToken = req.headers["refresh-token"];
+  console.log("access:", accessToken);
 
   //verify token
   const decodedAccess = jwtUtils.verifyAccessToken(accessToken);
@@ -84,14 +85,6 @@ app.get("/isAuth", (req, res) => {
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
-  }
-});
-
-app.get("/logOut", (req, res) => {
-  try {
-    res.cookie("accessToken", undefined).cookie("refreshToken", undefined).send("Cookies deleted");
-  } catch (error) {
-    console.log(error);
   }
 });
 
@@ -171,7 +164,7 @@ app.post("/register", async function (req, res) {
       res.send({ error: error });
     } else {
       try {
-        const newUser = await new FHB({
+        const newUser = new FHB({
           email: userEmail,
           password: hash,
           oldBrews: userOldBrews,

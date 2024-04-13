@@ -44,7 +44,7 @@ app.get("/isAuth", (req, res) => {
   });
 
 
-  
+
 app.post("/login", async (req, res) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
@@ -105,5 +105,14 @@ app.post("/login", async (req, res) => {
     console.log(error);
   }
 });
+
+
+// app.get("/logOut", (req, res) => {
+//   try {
+//     res.cookie("accessToken", undefined).cookie("refreshToken", undefined).send("Cookies deleted");
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
 
   */
