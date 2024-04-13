@@ -46,11 +46,12 @@ app.get("/isAuth", (req, res) => {
 
     if (decodedAccess === undefined) {
       const decodedRefresh = jwtUtils.verifyRefreshToken(refreshToken);
+      console.log(decodedRefresh);
 
       if (decodedRefresh !== undefined) {
         const newPaylod = {
+          id: decodedRefresh.id,
           email: decodedRefresh.email,
-          password: decodedRefresh.password,
         };
 
         console.log(newPaylod);
@@ -64,7 +65,7 @@ app.get("/isAuth", (req, res) => {
           sameSite: "none",
         });
 
-        res.send(decodedRefresh).sendStatus(200);
+        res.send(decodedRefresh).status(200);
       } else if (decodedRefresh === undefined) {
         console.log("decodedRefresh Err");
         res.sendStatus(404);
