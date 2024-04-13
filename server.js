@@ -1,9 +1,26 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const bodyParser = require("body-parser");
+const connectDB = require("./database.js");
+const FHB = require("./model/userData.js");
+const jwtUtils = require("./jwt/jwt.js");
+require("dotenv").config();
 
 //cookie parser
 // const cookieParser = require("cookie-parser");
+// app.use(cookieParser());
+
+//bcrypt password hashing
+const bcrypt = require("bcrypt");
+const { send } = require("express/lib/response.js");
+const saltRounds = 10;
+
+connectDB();
+
+app.use(express.json());
+app.use(bodyParser.json());
+app.use(express.static("build"));
 
 //cors setting
 app.use(
@@ -14,25 +31,20 @@ app.use(
   })
 );
 
-const bodyParser = require("body-parser");
-const connectDB = require("./database.js");
-const FHB = require("./model/userData.js");
-require("dotenv").config();
+const clientDomain = "https://voluble-kashata-776f36.netlify.app";
 
-//import JWT token function from other file.
-const jwtUtils = require("./jwt/jwt.js");
+app.get(clientDomain, (req, res) => {
+  try {
+    res.send(response.data);
+  } catch (error) {
+    res.send(error);
+  }
+});
 
-//bcrypt password hashing
-const bcrypt = require("bcrypt");
-const { send } = require("express/lib/response.js");
-const saltRounds = 10;
-
-connectDB();
-
-app.use(express.json());
-// app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(express.static("build"));
+// for server.
+app.get("/", (req, res) => {
+  res.send(`"Server is running...", "Current client sied domain:" ${clientDomain}`);
+});
 
 //Cookie API
 app.get("/isAuth", (req, res) => {
@@ -60,9 +72,14 @@ app.get("/isAuth", (req, res) => {
       };
 
       const newAccessToken = jwtUtils.postAccessToken(newPaylod);
-      console.log(newPaylod);
 
-      res.json({ newAccessToken: newAccessToken, userId: newPaylod.id }).status(200);
+      res
+        .json({
+          newAccessToken: newAccessToken,
+          userId: newPaylod.id,
+          userEmailnew: newPaylod.email,
+        })
+        .status(200);
     } else res.sendStatus(302);
   } catch (err) {
     console.log(err);
@@ -76,21 +93,6 @@ app.get("/logOut", (req, res) => {
   } catch (error) {
     console.log(error);
   }
-});
-
-const clientDomain = "https://voluble-kashata-776f36.netlify.app";
-
-app.get(clientDomain, (req, res) => {
-  try {
-    res.send(response.data);
-  } catch (error) {
-    res.send(error);
-  }
-});
-
-//TEST
-app.get("/", (req, res) => {
-  res.send(`"Server is running...", "Current client sied domain:" ${clientDomain}`);
 });
 
 // GET current brewing information
