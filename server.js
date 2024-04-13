@@ -4,16 +4,16 @@ const app = express();
 const bodyParser = require("body-parser");
 const connectDB = require("./database.js");
 const FHB = require("./model/userData.js");
-const jwtUtils = require("./jwt/jwt.js");
 require("dotenv").config();
 
 // RestfulAPIs
 const isAuthRouter = require("./auth/isAuth.js");
-
-//bcrypt password hashing
-const bcrypt = require("bcrypt");
-const { send } = require("express/lib/response.js");
-const saltRounds = 10;
+const userRegister = require("./api/user/register.js");
+const userLogIn = require("./api/user/logIn.js");
+const saveFavs = require("./api/customize/saveFavs.js");
+const updateFavdetails = require("./api/customize/updateFavdet.js");
+const updateFavdesc = require("./api/customize/updateFavdesc.js");
+const deleteFav = require("./api/customize/deleteFav.js");
 
 connectDB();
 
@@ -47,55 +47,6 @@ app.get("/", (req, res) => {
 
 //Auth with JWT tokens
 app.use(isAuthRouter);
-// app.get("/isAuth", (req, res) => {
-//   //load tokens
-//   const accessToken = req.headers["authorization"].split(" ")[1];
-//   const refreshToken = req.headers["refresh-token"];
-
-//   //verify token
-//   const decodedAccess = jwtUtils.verifyAccessToken(accessToken);
-//   const decodedRefresh = jwtUtils.verifyRefreshToken(refreshToken);
-
-//   try {
-//     if (decodedAccess) {
-//       const accessPayload = {
-//         id: decodedAccess.id,
-//         email: decodedAccess.email,
-//       };
-//       res.json({ userId: accessPayload.id, userEmail: accessPayload.email }).status(200);
-//     } else if (decodedRefresh) {
-//       const newPaylod = {
-//         id: decodedRefresh.id,
-//         email: decodedRefresh.email,
-//       };
-
-//       const newAccessToken = jwtUtils.postAccessToken(newPaylod);
-
-//       res
-//         .json({
-//           newAccessToken: newAccessToken,
-//           userId: newPaylod.id,
-//           userEmail: newPaylod.email,
-//         })
-//         .status(200);
-//     } else res.sendStatus(302);
-//   } catch (err) {
-//     console.log(err);
-//     res.sendStatus(500);
-//   }
-// });
-
-// GET current brewing information
-
-app.get("/finish", async (req, res) => {
-  try {
-    const userName = await FHB.findOne(req.query);
-
-    res.send(userName.currentBrews);
-  } catch (error) {
-    console.log(error);
-  }
-});
 
 //GET history of oldBrews from DB
 app.get("/getOldbrews", async (req, res) => {
@@ -136,78 +87,10 @@ app.get("/getFavourites", async (req, res) => {
 });
 
 // POST user data (register user)
-app.post("/register", async function (req, res) {
-  const userEmail = req.body.email;
-  const userPassword = req.body.password;
-  const userOldBrews = req.body.oldBrews;
-  const userFavs = req.body.favourites;
-
-  bcrypt.hash(userPassword, saltRounds, async (error, hash) => {
-    const exisitingEmail = await FHB.findOne({ email: userEmail });
-
-    if (exisitingEmail) {
-      res.sendStatus(400);
-    } else if (error) {
-      res.send({ error: error });
-    } else {
-      try {
-        const newUser = new FHB({
-          email: userEmail,
-          password: hash,
-          oldBrews: userOldBrews,
-          favourites: userFavs,
-        });
-        await newUser.save();
-
-        res.send(newUser._id);
-        console.log(`${userEmail} Register Successed!`);
-      } catch (error) {
-        console.log(error);
-        res.sendStatus(404);
-      }
-    }
-  });
-});
+app.use(userRegister);
 
 // POST user data for login
-app.post("/login", async (req, res) => {
-  const userEmail = req.body.email;
-  const userPassword = req.body.password;
-
-  try {
-    const userInfo = await FHB.findOne({
-      email: userEmail,
-    });
-
-    if (userInfo) {
-      const data = userInfo;
-
-      bcrypt.compare(userPassword, data.password, (error, result) => {
-        try {
-          if (data.password === null) {
-            res.sendStatus(400), send(express);
-          } else if (!result) {
-            res.sendStatus(404);
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      });
-
-      const accessToken = jwtUtils.postAccessToken(data);
-      const refreshToken = jwtUtils.postRefreshToken(data);
-
-      // Send JWT tokento the client
-      res.json({
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        userInfo: userInfo,
-      });
-    }
-  } catch (error) {
-    console.log(error);
-  }
-});
+app.use(userLogIn);
 
 //POST data oldBrews in databas
 app.post("/saveHistory", async function (req, res) {
@@ -238,98 +121,15 @@ app.post("/saveHistory", async function (req, res) {
 });
 
 //POST favourite brews in database
-app.post("/saveFavourites", async function (req, res) {
-  const userEmail = req.body.email;
-  const favouriteBrews = req.body.favourites[0];
-
-  try {
-    const user = await FHB.findOne({ email: userEmail });
-
-    if (user) {
-      if (user.favourites.length >= 5) {
-        res.status(422).send(true);
-        return;
-      } else if (user.favourites.length < 5) {
-        user.favourites.push(favouriteBrews);
-        await user.save();
-      }
-    }
-
-    res.send(user.favourites);
-    console.log("Fav saved!");
-  } catch (error) {
-    console.log(error);
-  }
-});
+app.use(saveFavs);
 
 //PUT update Name for favourite(custom)
-app.put("/updateFavDetails", async function (req, res) {
-  const userEmail = req.body.email;
-  const newFavs = req.body.favourites;
-
-  try {
-    const updateFavDetail = await FHB.findOneAndUpdate(
-      {
-        email: userEmail,
-      },
-      {
-        $set: {
-          favourites: newFavs,
-        },
-      },
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
-    res.status(200).send(updateFavDetail);
-  } catch (error) {
-    console.log(error);
-  }
-});
+app.use(updateFavdetails);
 
 //PUT Description for favourite
-app.put("/updateDescription", async function (req, res) {
-  const favName = req.body.favourites.favName;
-  const description = req.body.favourites.description;
-
-  try {
-    const updateMenuName = await FHB.findOneAndUpdate(
-      {
-        "favourites.favName": favName,
-      },
-      {
-        $set: {
-          "favourites.$.description": description,
-        },
-      },
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
-    console.log(description, "saved.");
-    res.status(200).send(updateMenuName);
-  } catch (error) {
-    console.log(error);
-  }
-});
+app.use(updateFavdesc);
 
 //DELETE favourite brew in database
-app.delete("/deleteFav", async function (req, res) {
-  const favName = req.query.favName;
-
-  try {
-    await FHB.updateOne(
-      { "favourites.favName": favName },
-      { $pull: { favourites: { favName: favName } } }
-    );
-    console.log("Fav Deleted!");
-    res.sendStatus(200);
-  } catch (error) {
-    res.send(error);
-    console.log(error);
-  }
-});
+app.use(deleteFav);
 
 app.listen(process.env.PORT || 8080);
