@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const FHB = require("../../model/userData");
+const bcrypt = require("bcrypt");
 
 router.post("/register", async function (req, res) {
   const userEmail = req.body.email;
