@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const FHB = require("./model/userData.js");
 
 router.put("/updateDescription", async function (req, res) {
   const favName = req.body.favourites.favName;

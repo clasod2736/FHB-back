@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const FHB = require("./model/userData.js");
 
 router.post("/saveFavourites", async function (req, res) {
   const userEmail = req.body.email;
