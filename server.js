@@ -77,7 +77,7 @@ app.get("/isAuth", (req, res) => {
         .json({
           newAccessToken: newAccessToken,
           userId: newPaylod.id,
-          userEmailnew: newPaylod.email,
+          userEmail: newPaylod.email,
         })
         .status(200);
     } else res.sendStatus(302);
