@@ -42,7 +42,7 @@ app.get(clientDomain, (req, res) => {
 
 // for server app.
 app.get("/", (req, res) => {
-  res.send(`"Server is running...", "Current client sied domain:" ${clientDomain}`);
+  res.send(`Server is running..., Current client sied domain: ${clientDomain}`);
 });
 
 //Auth with JWT tokens
