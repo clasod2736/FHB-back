@@ -51,13 +51,10 @@ app.get("/isAuth", (req, res) => {
   //load tokens
   const accessToken = req.headers["authorization"].split(" ")[1];
   const refreshToken = req.headers["refresh-token"];
-  console.log(accessToken);
-  console.log(refreshToken);
 
   //verify token
   const decodedAccess = jwtUtils.verifyAccessToken(accessToken);
   const decodedRefresh = jwtUtils.verifyRefreshToken(refreshToken);
-  console.log(decodedAccess);
 
   try {
     if (decodedAccess) {
@@ -65,7 +62,7 @@ app.get("/isAuth", (req, res) => {
         id: decodedAccess.id,
         email: decodedAccess.email,
       };
-      res.json(accessPayload).status(200);
+      res.json({ userId: accessPayload.id, userEmail: accessPayload.email }).status(200);
     } else if (decodedRefresh) {
       const newPaylod = {
         id: decodedRefresh.id,
