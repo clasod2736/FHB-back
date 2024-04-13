@@ -7,9 +7,8 @@ const FHB = require("./model/userData.js");
 const jwtUtils = require("./jwt/jwt.js");
 require("dotenv").config();
 
-//cookie parser
-// const cookieParser = require("cookie-parser");
-// app.use(cookieParser());
+// RestfulAPIs
+const isAuthRouter = require("./isAuth.js");
 
 //bcrypt password hashing
 const bcrypt = require("bcrypt");
@@ -41,59 +40,57 @@ app.get(clientDomain, (req, res) => {
   }
 });
 
-// for server.
+// for server app.
 app.get("/", (req, res) => {
   res.send(`"Server is running...", "Current client sied domain:" ${clientDomain}`);
 });
 
 //Auth with JWT tokens
-app.get("/isAuth", (req, res) => {
-  //load tokens
-  const accessToken = req.headers["authorization"].split(" ")[1];
-  const refreshToken = req.headers["refresh-token"];
+app.use(isAuthRouter);
+// app.get("/isAuth", (req, res) => {
+//   //load tokens
+//   const accessToken = req.headers["authorization"].split(" ")[1];
+//   const refreshToken = req.headers["refresh-token"];
 
-  //verify token
-  const decodedAccess = jwtUtils.verifyAccessToken(accessToken);
-  const decodedRefresh = jwtUtils.verifyRefreshToken(refreshToken);
+//   //verify token
+//   const decodedAccess = jwtUtils.verifyAccessToken(accessToken);
+//   const decodedRefresh = jwtUtils.verifyRefreshToken(refreshToken);
 
-  try {
-    if (decodedAccess) {
-      const accessPayload = {
-        id: decodedAccess.id,
-        email: decodedAccess.email,
-      };
-      res.json({ userId: accessPayload.id, userEmail: accessPayload.email }).status(200);
-    } else if (decodedRefresh) {
-      const newPaylod = {
-        id: decodedRefresh.id,
-        email: decodedRefresh.email,
-      };
+//   try {
+//     if (decodedAccess) {
+//       const accessPayload = {
+//         id: decodedAccess.id,
+//         email: decodedAccess.email,
+//       };
+//       res.json({ userId: accessPayload.id, userEmail: accessPayload.email }).status(200);
+//     } else if (decodedRefresh) {
+//       const newPaylod = {
+//         id: decodedRefresh.id,
+//         email: decodedRefresh.email,
+//       };
 
-      const newAccessToken = jwtUtils.postAccessToken(newPaylod);
+//       const newAccessToken = jwtUtils.postAccessToken(newPaylod);
 
-      res
-        .json({
-          newAccessToken: newAccessToken,
-          userId: newPaylod.id,
-          userEmail: newPaylod.email,
-        })
-        .status(200);
-    } else res.sendStatus(302);
-  } catch (err) {
-    console.log(err);
-    res.sendStatus(500);
-  }
-});
+//       res
+//         .json({
+//           newAccessToken: newAccessToken,
+//           userId: newPaylod.id,
+//           userEmail: newPaylod.email,
+//         })
+//         .status(200);
+//     } else res.sendStatus(302);
+//   } catch (err) {
+//     console.log(err);
+//     res.sendStatus(500);
+//   }
+// });
 
 // GET current brewing information
 app.get("/finish", async (req, res) => {
-  console.log(req.query);
-
   try {
     const userName = await FHB.findOne(req.query);
 
     res.send(userName.currentBrews);
-    console.log(userName.currentBrews);
   } catch (error) {
     console.log(error);
   }
@@ -101,13 +98,10 @@ app.get("/finish", async (req, res) => {
 
 //GET history of oldBrews from DB
 app.get("/getOldbrews", async (req, res) => {
-  console.log(req.query);
-
   try {
     const user = await FHB.findOne({ email: req.query.email });
 
     res.send(user.oldBrews);
-    console.log("Sent Old Brews");
   } catch (error) {
     console.log(error);
   }
@@ -115,8 +109,6 @@ app.get("/getOldbrews", async (req, res) => {
 
 //GET Recent Brew history.
 app.get("/getRecentbrew", async (req, res) => {
-  console.log(req.query);
-
   try {
     const user = await FHB.findOne({ email: req.query.email });
 
@@ -132,13 +124,10 @@ app.get("/getRecentbrew", async (req, res) => {
 
 //GET favourites from DB
 app.get("/getFavourites", async (req, res) => {
-  console.log(req.query);
-
   try {
     const user = await FHB.findOne({ email: req.query.email });
 
     res.send(user.favourites);
-    console.log(user.favourites);
     console.log("Sent Favourites");
   } catch (error) {
     console.log(error);
@@ -170,7 +159,7 @@ app.post("/register", async function (req, res) {
         await newUser.save();
 
         res.send(newUser._id);
-        console.log("Register Successed!");
+        console.log(`${userEmail} Register Successed!`);
       } catch (error) {
         console.log(error);
         res.sendStatus(404);
@@ -206,8 +195,6 @@ app.post("/login", async (req, res) => {
 
       const accessToken = jwtUtils.postAccessToken(data);
       const refreshToken = jwtUtils.postRefreshToken(data);
-      console.log(accessToken);
-      console.log(refreshToken);
 
       // Send JWT tokento the client
       res.json({
@@ -242,7 +229,7 @@ app.post("/saveHistory", async function (req, res) {
     }
 
     res.send(user.oldBrews);
-    console.log("History Saved!");
+    console.log("Recent history Saved!");
   } catch (error) {
     console.log(error);
     res.send("Server Error");
@@ -268,7 +255,7 @@ app.post("/saveFavourites", async function (req, res) {
     }
 
     res.send(user.favourites);
-    console.log("favourite!");
+    console.log("Fav saved!");
   } catch (error) {
     console.log(error);
   }
@@ -304,7 +291,6 @@ app.put("/updateFavDetails", async function (req, res) {
 app.put("/updateDescription", async function (req, res) {
   const favName = req.body.favourites.favName;
   const description = req.body.favourites.description;
-  console.log(favName, description);
 
   try {
     const updateMenuName = await FHB.findOneAndUpdate(
@@ -338,8 +324,9 @@ app.delete("/deleteFav", async function (req, res) {
       { $pull: { favourites: { favName: favName } } }
     );
     console.log("Fav Deleted!");
-    res.send("Favorite deleted successfully.");
+    res.sendStatus(200);
   } catch (error) {
+    res.send(error);
     console.log(error);
   }
 });

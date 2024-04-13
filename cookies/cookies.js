@@ -1,6 +1,12 @@
 /*
 this apis will use again when I implement session and cookies 
 
+
+//those just for setting
+//cookie parser
+// const cookieParser = require("cookie-parser");
+// app.use(cookieParser());
+
 app.get("/isAuth", (req, res) => {
     const accessToken = req.cookies.accessToken;
     const refreshToken = req.cookies.refreshToken;
