@@ -49,7 +49,7 @@ app.get("/", (req, res) => {
 //Auth with JWT tokens
 app.get("/isAuth", (req, res) => {
   //load tokens
-  const accessToken = req.headers.authorization;
+  const accessToken = req.headers.Authorization;
   const refreshToken = req.headers["refresh-token"];
   console.log("access:", accessToken);
 
