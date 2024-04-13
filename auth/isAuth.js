@@ -34,7 +34,7 @@ router.get("/isAuth", (req, res) => {
         })
         .status(200);
       console.log("New access token generated");
-    }
+    } else res.sendStatus(404);
   } catch (err) {
     console.log(err);
     res.send(err);
