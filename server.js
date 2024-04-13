@@ -57,6 +57,7 @@ app.get("/isAuth", (req, res) => {
   //verify token
   const decodedAccess = jwtUtils.verifyAccessToken(accessToken);
   const decodedRefresh = jwtUtils.verifyRefreshToken(refreshToken);
+  console.log(decodedAccess);
 
   try {
     if (decodedAccess) {
