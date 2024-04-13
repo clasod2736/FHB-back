@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const FHB = require("./model/userData.js");
+const FHB = require("../../model/userData");
 
 router.put("/updateFavDetails", async function (req, res) {
   const userEmail = req.body.email;
