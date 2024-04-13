@@ -21,7 +21,6 @@ router.post("/register", async function (req, res) {
     } else {
       try {
         const newUser = new FHB({
-          _id: mongoose.Schema.ObjectId,
           email: userEmail,
           password: hash,
           oldBrews: userOldBrews,

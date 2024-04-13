@@ -14,13 +14,11 @@ router.get("/isAuth", (req, res) => {
   try {
     if (decodedAccess) {
       const accessPayload = {
-        id: decodedAccess.id,
         email: decodedAccess.email,
       };
-      res.json({ userId: accessPayload.id, userEmail: accessPayload.email }).status(200);
+      res.json({ userEmail: accessPayload.email }).status(200);
     } else if (decodedRefresh) {
       const newPayload = {
-        id: decodedRefresh.id,
         email: decodedRefresh.email,
       };
 
@@ -29,7 +27,6 @@ router.get("/isAuth", (req, res) => {
       res
         .json({
           newAccessToken: newAccessToken,
-          userId: newPayload.id,
           userEmail: newPayload.email,
         })
         .status(200);

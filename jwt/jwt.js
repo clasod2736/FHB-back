@@ -7,7 +7,6 @@ const postAccessToken = (userData) => {
     const token = jwt.sign(
       {
         email: userData.email,
-        id: userData._id,
       },
       process.env.ACCESS_SECRET,
       {
@@ -27,7 +26,6 @@ const postRefreshToken = (userData) => {
     const token = jwt.sign(
       {
         email: userData.email,
-        id: userData._id,
       },
       process.env.REFRESH_SECRET,
       {
