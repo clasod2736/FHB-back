@@ -51,13 +51,12 @@ app.get("/isAuth", (req, res) => {
   //load tokens
   const accessToken = req.headers["authorization"].split(" ")[1];
   const refreshToken = req.headers["refresh-token"];
-  console.log("access:", accessToken);
+  console.log(accessToken);
+  console.log(refreshToken);
 
   //verify token
   const decodedAccess = jwtUtils.verifyAccessToken(accessToken);
   const decodedRefresh = jwtUtils.verifyRefreshToken(refreshToken);
-  console.log(decodedRefresh);
-  console.log(decodedAccess);
 
   try {
     if (decodedAccess) {
