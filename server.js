@@ -80,7 +80,7 @@ app.get("/logOut", (req, res) => {
 
 const clientDomain = "https://voluble-kashata-776f36.netlify.app";
 
-app.get(serverDomain, (req, res) => {
+app.get(clientDomain, (req, res) => {
   try {
     res.send(response.data);
   } catch (error) {
