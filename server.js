@@ -48,7 +48,11 @@ app.get("/isAuth", (req, res) => {
 
   try {
     if (decodedAccess) {
-      res.sendStatus(200);
+      const accessPayload = {
+        id: decodedAccess.id,
+        email: decodedAccess.email,
+      };
+      res.json(accessPayload).status(200);
     } else if (decodedRefresh) {
       const newPaylod = {
         id: decodedRefresh.id,
@@ -58,7 +62,7 @@ app.get("/isAuth", (req, res) => {
       const newAccessToken = jwtUtils.postAccessToken(newPaylod);
       console.log(newPaylod);
 
-      res.send(newAccessToken).status(200);
+      res.json({ newAccessToken: newAccessToken, userId: newPaylod.id }).status(200);
     } else res.sendStatus(302);
   } catch (err) {
     console.log(err);
@@ -74,7 +78,7 @@ app.get("/logOut", (req, res) => {
   }
 });
 
-const serverDomain = "https://voluble-kashata-776f36.netlify.app";
+const clientDomain = "https://voluble-kashata-776f36.netlify.app";
 
 app.get(serverDomain, (req, res) => {
   try {
@@ -86,7 +90,7 @@ app.get(serverDomain, (req, res) => {
 
 //TEST
 app.get("/", (req, res) => {
-  res.send("Hello from Express!");
+  res.send(`"Server is running...", "Current client sied domain:" ${clientDomain}`);
 });
 
 // GET current brewing information
@@ -337,7 +341,7 @@ app.delete("/deleteFav", async function (req, res) {
   const favName = req.query.favName;
 
   try {
-    const deleteFav = await FHB.updateOne(
+    await FHB.updateOne(
       { "favourites.favName": favName },
       { $pull: { favourites: { favName: favName } } }
     );
