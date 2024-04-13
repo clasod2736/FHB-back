@@ -36,43 +36,30 @@ app.use(express.static("build"));
 
 //Cookie API
 app.get("/isAuth", (req, res) => {
-  //check tokens
+  //load tokens
   const accessToken = req.headers.authorization;
   const refreshToken = req.headers["refresh-token"];
 
+  //verify token
+  const decodedAccess = jwtUtils.verifyAccessToken(accessToken);
+  const decodedRefresh = jwtUtils.verifyRefreshToken(refreshToken);
+  console.log(decodedRefresh);
+  console.log(decodedAccess);
+
   try {
-    const decodedAccess = jwtUtils.verifyAccessToken(accessToken);
-    console.log(decodedAccess);
+    if (decodedAccess) {
+      res.sendStatus(200);
+    } else if (decodedRefresh) {
+      const newPaylod = {
+        id: decodedRefresh.id,
+        email: decodedRefresh.email,
+      };
 
-    if (decodedAccess === undefined) {
-      const decodedRefresh = jwtUtils.verifyRefreshToken(refreshToken);
-      console.log(decodedRefresh);
+      const newAccessToken = jwtUtils.postAccessToken(newPaylod);
+      console.log(newPaylod);
 
-      if (decodedRefresh !== undefined) {
-        const newPaylod = {
-          id: decodedRefresh.id,
-          email: decodedRefresh.email,
-        };
-
-        console.log(newPaylod);
-        const newAccessToken = jwtUtils.postAccessToken(newPaylod);
-
-        res.cookie("accessToken", newAccessToken, {
-          path: "/",
-          domain: "https://main--voluble-kashata-776f36.netlify.app/",
-          secure: true,
-          httpOnly: true,
-          sameSite: "none",
-        });
-
-        res.send(decodedRefresh).status(200);
-      } else if (decodedRefresh === undefined) {
-        console.log("decodedRefresh Err");
-        res.sendStatus(404);
-      }
-    } else {
-      res.send(decodedAccess);
-    }
+      res.send(newAccessToken).status(200);
+    } else res.sendStatus(302);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
