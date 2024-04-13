@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const jwtUtils = require("./jwt/jwt.js");
+const jwtUtils = require("../jwt/jwt");
 
 router.get("/isAuth", (req, res) => {
   // load tokens
