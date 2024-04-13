@@ -48,27 +48,30 @@ app.get("/", (req, res) => {
   res.send(`Server is running..., Current client sied domain: ${clientDomain}`);
 });
 
+/* Handling User Data */
+// POST user data for login
+app.use(userLogIn);
+
+// POST user data (register user)
+app.use(userRegister);
+
 //Auth with JWT tokens
 app.use(isAuthRouter);
 
-//GET history of oldBrews from DB
+/* Hnadling user's brew data*/
+//GET history list from DB
 app.use(getOldbrew);
 
 //GET Recent Brew history.
 app.use(getRecentbrew);
 
-//GET favourites from DB
+//GET favourite list from DB
 app.use(getFavourites);
 
-//POST data oldBrews in databas
+//POST data oldBrew to history in databas
 app.use(saveHistory);
 
-// POST user data (register user)
-app.use(userRegister);
-
-// POST user data for login
-app.use(userLogIn);
-
+/* Customizing user brew datas */
 //POST favourite brews in database
 app.use(saveFavs);
 
