@@ -32,6 +32,17 @@ router.post("/login", async (req, res) => {
       const accessToken = jwtUtils.postAccessToken(data);
       const refreshToken = jwtUtils.postRefreshToken(data);
 
+      await FHB.findOneAndUpdate(
+        {
+          email: userEmail,
+        },
+        {
+          $set: {
+            refreshToken: refreshToken,
+          },
+        }
+      );
+
       // Send JWT tokento the client
       res.json({
         accessToken: accessToken,
