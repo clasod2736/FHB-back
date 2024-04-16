@@ -3,7 +3,7 @@ const router = express.Router();
 const FHB = require("../../model/userData");
 
 router.put("/logOut", async (req, res) => {
-  const userEmail = req.body.userEmail;
+  const userEmail = req.body.email;
 
   try {
     await FHB.findOneAndUpdate(
