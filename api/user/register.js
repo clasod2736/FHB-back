@@ -3,7 +3,6 @@ const router = express.Router();
 const FHB = require("../../model/userData");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
-const mongoose = require("mongoose");
 
 router.post("/register", async function (req, res) {
   const userEmail = req.body.email;
@@ -23,6 +22,7 @@ router.post("/register", async function (req, res) {
         const newUser = new FHB({
           email: userEmail,
           password: hash,
+          refreshToken: "",
           oldBrews: userOldBrews,
           favourites: userFavs,
         });
