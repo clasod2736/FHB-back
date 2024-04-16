@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const FHB = require("../../model/userData");
 
-router.put("/logOut", async function (req, res) {
+router.put("/logOut", async (req, res) => {
   const userEmail = req.body.userEmail;
 
   try {
@@ -27,3 +27,5 @@ router.put("/logOut", async function (req, res) {
     res.send(error);
   }
 });
+
+module.exports = router;
