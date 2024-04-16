@@ -54,7 +54,7 @@ app.get("/", (req, res) => {
 app.use(userLogIn);
 
 // Log out and delete refresh token in DB
-app.user(userLogOut);
+app.use(userLogOut);
 
 // POST user data (register user)
 app.use(userRegister);
