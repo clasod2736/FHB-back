@@ -9,6 +9,9 @@ const FHBSchema = new Schema({
   password: {
     type: String,
   },
+  refreshToken: {
+    type: String,
+  },
   oldBrews: [
     {
       order: Number,
