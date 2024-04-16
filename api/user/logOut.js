@@ -12,7 +12,7 @@ router.put("/logOut", async (req, res) => {
       },
       {
         $set: {
-          refreshToken: "",
+          refreshToken: undefined,
         },
       },
       {
