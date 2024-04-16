@@ -9,6 +9,7 @@ require("dotenv").config();
 const isAuthRouter = require("./auth/isAuth.js");
 const userRegister = require("./api/user/register.js");
 const userLogIn = require("./api/user/logIn.js");
+const userLogOut = require("./api/user/logOut.js");
 const saveFavs = require("./api/customize/saveFavs.js");
 const updateFavdetails = require("./api/customize/updateFavdet.js");
 const updateFavdesc = require("./api/customize/updateFavdesc.js");
@@ -51,6 +52,9 @@ app.get("/", (req, res) => {
 /* Handling User Data */
 // POST user data for login
 app.use(userLogIn);
+
+// Log out and delete refresh token in DB
+app.user(userLogOut);
 
 // POST user data (register user)
 app.use(userRegister);
