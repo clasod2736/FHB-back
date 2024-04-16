@@ -5,6 +5,7 @@ const FHB = require("../../model/userData");
 router.put("/logOut", async (req, res) => {
   const userEmail = req.body.email;
 
+  console.log(userEmail);
   try {
     const deleteRefresh = await FHB.findOneAndUpdate(
       {
