@@ -6,7 +6,7 @@ router.put("/logOut", async (req, res) => {
   const userEmail = req.body.email;
 
   try {
-    await FHB.findOneAndUpdate(
+    const deleteRefresh = await FHB.findOneAndUpdate(
       {
         email: userEmail,
       },
@@ -21,7 +21,7 @@ router.put("/logOut", async (req, res) => {
       }
     );
     console.log(userEmail, "Logged Out");
-    res.status(200);
+    res.status(200).send(deleteRefresh);
   } catch (error) {
     console.log(error);
     res.send(error);
