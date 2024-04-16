@@ -11,8 +11,8 @@ router.put("/logOut", async (req, res) => {
         email: userEmail,
       },
       {
-        $set: {
-          refreshToken: undefined,
+        $push: {
+          refreshToken: "",
         },
       },
       {
